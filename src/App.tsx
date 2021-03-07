@@ -10,10 +10,14 @@ export interface InputArr {
 
 const App: React.FC<props> = () => {
   const initialInputArr = useRef<InputArr[]>(
-    Array.from(Array(30)).map((_, idx) => ({
+    Array.from(Array(2)).map((_, idx) => ({
       id: idx,
       val: Math.random() * 10,
     }))
+    // [
+    //   { id: 0, val: 7 },
+    //   { id: 1, val: 3 },
+    // ]
   );
   const [inputArr, setInputArr] = useState<InputArr[]>([]);
   const counter = useRef(0);
@@ -64,7 +68,10 @@ const App: React.FC<props> = () => {
 
   return (
     <div>
-      <SortContainer inputArr={initialInputArr.current} />
+      <SortContainer
+        inputArr={inputArr}
+        initialInputArr={initialInputArr.current}
+      />
       <button onClick={sort}>sort</button>
     </div>
   );
