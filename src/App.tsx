@@ -3,11 +3,19 @@ import SortContainer from "./components/SortContainer";
 
 interface props {}
 
+export interface InputArr {
+  id: number;
+  val: number;
+}
+
 const App: React.FC<props> = () => {
-  const initialInputArr = useRef<number[]>(
-    Array.from(Array(30)).map((_) => Math.random() * 10)
+  const initialInputArr = useRef<InputArr[]>(
+    Array.from(Array(30)).map((_, idx) => ({
+      id: idx,
+      val: Math.random() * 10,
+    }))
   );
-  const [inputArr, setInputArr] = useState<number[]>([]);
+  const [inputArr, setInputArr] = useState<InputArr[]>([]);
   const counter = useRef(0);
 
   useEffect(() => {
@@ -29,7 +37,7 @@ const App: React.FC<props> = () => {
           counter.current++;
           // TODO: show iteration count
 
-          if (inputArr[j] > inputArr[j + 1]) {
+          if (inputArr[j].val > inputArr[j + 1].val) {
             const temp = inputArr[j];
             inputArr[j] = inputArr[j + 1];
             inputArr[j + 1] = temp;
