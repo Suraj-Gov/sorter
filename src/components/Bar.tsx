@@ -42,6 +42,7 @@ const Bar: React.FC<props> = ({ width, height, color, xPos: xPosProp }) => {
       width={width}
       color={color}
       xPos={xPos}
+      className="bar"
     ></BarComponent>
   );
 };

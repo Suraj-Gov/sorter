@@ -54,7 +54,10 @@ const App: React.FC<props> = () => {
         }
       }
       // if the first loop is over, stop the intervals
-      else clearInterval(intervalId);
+      else {
+        clearInterval(intervalId);
+        counter.current = 0;
+      }
       // TODO: allow for dynamic speed
     }, 30);
   };

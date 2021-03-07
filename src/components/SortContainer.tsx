@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { InputArr } from "../App";
 import Bar from "./Bar";
@@ -15,12 +15,21 @@ interface props {
 }
 
 const SortContainer: React.FC<props> = ({ inputArr }) => {
+  const initialXPositions = useRef<number[]>([]);
+  const [xPositions, setXPositions] = useState<number[]>([]);
+
+  useEffect(() => {
+    const bars = Array.from(document.querySelectorAll(".bar"));
+    initialXPositions.current = bars.map((i) => i.getBoundingClientRect().x);
+    setXPositions([...initialXPositions.current]);
+  }, []);
+
   return (
     <Container>
       {/* <Bar xPos={0} height={100} width={10} color={"#e91414"} /> */}
-      {inputArr.map((i) => (
+      {inputArr.map((i, idx) => (
         <Bar
-          xPos={0}
+          xPos={xPositions[idx] - initialXPositions.current[idx]}
           height={50 * i.val}
           width={10}
           color="#e91414"
