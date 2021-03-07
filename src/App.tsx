@@ -1,13 +1,19 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SortContainer from "./components/SortContainer";
 
 interface props {}
 
 const App: React.FC<props> = () => {
-  const [inputArr, setInputArr] = useState(() =>
+  const initialInputArr = useRef<number[]>(
     Array.from(Array(30)).map((_) => Math.random() * 10)
   );
+  const [inputArr, setInputArr] = useState<number[]>([]);
   const counter = useRef(0);
+
+  useEffect(() => {
+    const init = [...initialInputArr.current];
+    setInputArr(init);
+  }, []);
 
   const sort = () => {
     // instead of using loops like for loop, I'm using setInterval
@@ -20,7 +26,7 @@ const App: React.FC<props> = () => {
         // the value checker part of the first for loop ☝
         if (j < inputArr.length - i - 1) {
           // the value checker part of the second for loop ☝
-          console.log(counter.current++);
+          counter.current++;
           // TODO: show iteration count
 
           if (inputArr[j] > inputArr[j + 1]) {
@@ -42,12 +48,12 @@ const App: React.FC<props> = () => {
       // if the first loop is over, stop the intervals
       else clearInterval(intervalId);
       // TODO: allow for dynamic speed
-    }, 300);
+    }, 30);
   };
 
   return (
     <div>
-      <SortContainer inputArr={inputArr} />
+      <SortContainer inputArr={initialInputArr.current} />
       <button onClick={sort}>sort</button>
     </div>
   );
