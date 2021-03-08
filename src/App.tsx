@@ -14,6 +14,7 @@ const App: React.FC<props> = () => {
       id: idx,
       val: Math.round(Math.random() * 10 * 2) / 2 + 1,
     }))
+    // test array
     // [
     //   { id: 0, val: 7 },
     //   { id: 1, val: 6 },
@@ -25,7 +26,7 @@ const App: React.FC<props> = () => {
   );
   const [inputArr, setInputArr] = useState<InputArr[]>([]);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
-  const counter = useRef(0);
+  const [counter, setCounter] = useState(0);
 
   useEffect(() => {
     const init = [...initialInputArr.current];
@@ -43,7 +44,7 @@ const App: React.FC<props> = () => {
         // the value checker part of the first for loop ☝
         if (j < inputArr.length - i - 1) {
           // the value checker part of the second for loop ☝
-          counter.current++;
+          setCounter((prev) => prev + 1);
           // TODO: show iteration count
 
           if (inputArr[j].val > inputArr[j + 1].val) {
@@ -66,10 +67,10 @@ const App: React.FC<props> = () => {
       else {
         setIsSortingFinished(true);
         clearInterval(intervalId);
-        counter.current = 0;
+        setCounter(0);
       }
       // TODO: allow for dynamic speed
-    }, 700);
+    }, 500);
   };
 
   return (
