@@ -24,7 +24,7 @@ const SortContainer: React.FC<props> = ({ inputArr, initialInputArr }) => {
 
   useEffect(() => {
     initialInputArrContainer.current = [...initialInputArr];
-  }, []);
+  }, [initialInputArr]);
 
   useEffect(() => {
     if (barContext !== null) {
@@ -44,26 +44,34 @@ const SortContainer: React.FC<props> = ({ inputArr, initialInputArr }) => {
     if (inputArr.length !== 0 && xPositions.length !== 0) {
       setXPositions((prev) => {
         const changeInBars = [];
+        // console.log({
+        //   inputArr: inputArr.map((i) => i.id),
+        //   initialInputArr: initialInputArr.map((i) => i.id),
+        // });
         for (let i = 0; i < initialInputArr.length; i++) {
           if (inputArr[i].id !== initialInputArr[i].id) {
-            changeInBars.push(inputArr[i]);
+            changeInBars.push(i);
           }
         }
-        // console.log(changeInBars, "changeInBars");
         if (changeInBars.length === 0) {
           return [...prev];
         }
+        console.log(changeInBars, "change");
+
         const [a, b] = changeInBars;
         // swapping xPositions
-        const temp = prev[a.id];
-        prev[a.id] = prev[b.id];
-        prev[b.id] = temp;
-        // console.log(prev);
+        // const temp = prev[a.data.id];
+        // prev[a.idx] = prev[b.data.id];
+        // prev[b.idx] = temp;
+        const temp = prev[a];
+        prev[a] = prev[b];
+        prev[b] = temp;
+        console.log(prev.map((i) => i - initialXPositions.current[0]));
 
         return [...prev];
       });
     }
-  }, [inputArr]);
+  }, [inputArr, xPositions.length]);
 
   return (
     <Container>

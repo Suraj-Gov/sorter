@@ -27,7 +27,7 @@ const Bar: React.FC<props> = ({ width, height, color, xPos: xPosProp }) => {
 
   useLayoutEffect(() => {
     setBarContext((prev) => [...prev, barRef]);
-  }, []);
+  }, [setBarContext]);
 
   useLayoutEffect(() => {
     move(xPosProp);
