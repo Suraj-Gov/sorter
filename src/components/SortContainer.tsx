@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { InputArr } from "../App";
 import Bar from "./Bar";
@@ -57,7 +57,7 @@ const SortContainer: React.FC<props> = ({
       setXPositions(offsets);
       setMovingBars(newMovingBars);
     }
-  }, [inputArr, xPositions.length]);
+  }, [inputArr, xPositions.length, initialInputArr.length]);
 
   return (
     <Container>
@@ -70,7 +70,7 @@ const SortContainer: React.FC<props> = ({
             width={20}
             color="#e91414"
             key={i.id}
-            rank={i.id}
+            value={i.val}
             barMoving={movingBars.includes(idx)}
             finishedSorting={finishedSorting}
           />

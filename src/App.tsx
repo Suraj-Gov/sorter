@@ -10,9 +10,9 @@ export interface InputArr {
 
 const App: React.FC<props> = () => {
   const initialInputArr = useRef<InputArr[]>(
-    Array.from(Array(6)).map((_, idx) => ({
+    Array.from(Array(10)).map((_, idx) => ({
       id: idx,
-      val: Math.random() * 10,
+      val: Math.round(Math.random() * 10 * 2) / 2 + 1,
     }))
     // [
     //   { id: 0, val: 7 },
@@ -69,7 +69,7 @@ const App: React.FC<props> = () => {
         counter.current = 0;
       }
       // TODO: allow for dynamic speed
-    }, 1000);
+    }, 700);
   };
 
   return (

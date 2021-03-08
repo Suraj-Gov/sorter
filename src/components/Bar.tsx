@@ -1,5 +1,5 @@
 import anime from "animejs";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
 
 interface props {
@@ -8,7 +8,7 @@ interface props {
   active?: boolean;
   width: number;
   xPos: number;
-  rank?: number;
+  value?: number;
   barMoving: boolean;
   finishedSorting: boolean;
 }
@@ -33,7 +33,7 @@ const Bar: React.FC<props> = ({
   height,
   color,
   xPos: xPosProp,
-  rank,
+  value,
   barMoving,
   finishedSorting,
 }) => {
@@ -49,7 +49,7 @@ const Bar: React.FC<props> = ({
       targets: [barRef.current],
       translateX: xPos,
       easing: "easeInOutCirc",
-      duration: 800,
+      duration: 400,
     });
   };
 
@@ -64,7 +64,7 @@ const Bar: React.FC<props> = ({
         barMoving={barMoving}
         finishedSorting={finishedSorting}
       >
-        <span style={{ color: "white" }}>{rank}</span>
+        <span style={{ color: "white" }}>{value && value * 2}</span>
       </BarComponent>
     </div>
   );
