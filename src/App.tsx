@@ -10,22 +10,18 @@ export interface InputArr {
 
 const App: React.FC<props> = () => {
   const initialInputArr = useRef<InputArr[]>(
-<<<<<<< HEAD
-    // Array.from(Array(2)).map((_, idx) => ({
-=======
-    // Array.from(Array(5)).map((_, idx) => ({
->>>>>>> 900e5568936b17454c5e2cfcfa3dc524677643f3
-    //   id: idx,
-    //   val: Math.random() * 10,
-    // }))
-    [
-      { id: 0, val: 7 },
-      { id: 1, val: 6 },
-      { id: 2, val: 5 },
-      // { id: 3, val: 4 },
-      // { id: 4, val: 3 },
-      // { id: 5, val: 2 },
-    ]
+    Array.from(Array(60)).map((_, idx) => ({
+      id: idx,
+      val: Math.random() * 10,
+    }))
+    // [
+    //   { id: 0, val: 7 },
+    //   { id: 1, val: 6 },
+    //   { id: 2, val: 5 },
+    //   { id: 3, val: 4 },
+    //   { id: 4, val: 3 },
+    //   { id: 5, val: 2 },
+    // ]
   );
   const [inputArr, setInputArr] = useState<InputArr[]>([]);
   const counter = useRef(0);
@@ -56,7 +52,6 @@ const App: React.FC<props> = () => {
           }
           // swap if the left element is more than right element
           setInputArr([...inputArr]);
-          initialInputArr.current = [...inputArr];
           // set the array after swapping
           j++;
           // increment second loop variable
@@ -72,7 +67,7 @@ const App: React.FC<props> = () => {
         counter.current = 0;
       }
       // TODO: allow for dynamic speed
-    }, 5000);
+    }, 50);
   };
 
   return (

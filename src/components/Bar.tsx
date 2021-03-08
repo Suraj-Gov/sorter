@@ -1,7 +1,6 @@
 import anime from "animejs";
-import React, { useContext, useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import BarContext from "../contexts/BarContext";
 
 interface props {
   height: number;
@@ -21,13 +20,8 @@ const BarComponent = styled.div<props>`
 `;
 
 const Bar: React.FC<props> = ({ width, height, color, xPos: xPosProp }) => {
-  const { setBarContext } = useContext(BarContext);
   const barRef = useRef<HTMLDivElement>(null);
   const [xPos, setXPos] = useState(0);
-
-  useLayoutEffect(() => {
-    setBarContext((prev) => [...prev, barRef]);
-  }, [setBarContext]);
 
   useLayoutEffect(() => {
     move(xPosProp);
