@@ -39,6 +39,7 @@ const Bar: React.FC<props> = ({ width, height, color, xPos: xPosProp }) => {
       targets: [barRef.current],
       translateX: xPos,
       easing: "easeInOutCirc",
+      duration: 400,
     });
   };
 
