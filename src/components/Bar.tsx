@@ -8,20 +8,36 @@ interface props {
   active?: boolean;
   width: number;
   xPos: number;
+  rank?: number;
+  barMoving: boolean;
+  finishedSorting: boolean;
 }
 
 const BarComponent = styled.div<props>`
   height: ${(props) => props.height + "px"};
-  background-color: ${(props) => props.color};
   width: ${(props) => props.width + "px"};
   margin-right: 5px;
   position: relative;
-  left: ${(props) => props.xPos + "px"};
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 5px 0px;
+  background-color: ${(props) =>
+    props.barMoving || props.finishedSorting ? "#ff661f" : props.color};
+  transition: background-color 0.2s ease-in-out;
 `;
 
-const Bar: React.FC<props> = ({ width, height, color, xPos: xPosProp }) => {
+const Bar: React.FC<props> = ({
+  width,
+  height,
+  color,
+  xPos: xPosProp,
+  rank,
+  barMoving,
+  finishedSorting,
+}) => {
   const barRef = useRef<HTMLDivElement>(null);
-  const [xPos, setXPos] = useState(0);
 
   useLayoutEffect(() => {
     move(xPosProp);
@@ -33,19 +49,24 @@ const Bar: React.FC<props> = ({ width, height, color, xPos: xPosProp }) => {
       targets: [barRef.current],
       translateX: xPos,
       easing: "easeInOutCirc",
-      duration: 400,
+      duration: 800,
     });
   };
 
   return (
-    <BarComponent
-      ref={barRef}
-      height={height}
-      width={width}
-      color={color}
-      xPos={xPos}
-      className="bar"
-    ></BarComponent>
+    <div>
+      <BarComponent
+        ref={barRef}
+        height={height}
+        width={width}
+        color={color}
+        xPos={0}
+        barMoving={barMoving}
+        finishedSorting={finishedSorting}
+      >
+        <span style={{ color: "white" }}>{rank}</span>
+      </BarComponent>
+    </div>
   );
 };
 

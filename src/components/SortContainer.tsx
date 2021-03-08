@@ -13,15 +13,21 @@ const Container = styled.div`
 interface props {
   inputArr: InputArr[];
   initialInputArr: InputArr[];
+  finishedSorting: boolean;
 }
 
-const SortContainer: React.FC<props> = ({ inputArr, initialInputArr }) => {
+const SortContainer: React.FC<props> = ({
+  inputArr,
+  initialInputArr,
+  finishedSorting,
+}) => {
   const [xPositions, setXPositions] = useState<number[]>([]);
+  const [movingBars, setMovingBars] = useState<number[]>([]);
 
   useEffect(() => {
     if (inputArr.length !== 0) {
       // if the inputArr is not empty
-      const barWidth = 15;
+      const barWidth = 25;
       // hard coded barwidth
       // TODO: make it dynamic based on bar width on DOM
       const offsets = [];
@@ -43,7 +49,13 @@ const SortContainer: React.FC<props> = ({ inputArr, initialInputArr }) => {
         }
       }
 
+      const newMovingBars = offsets
+        .map((i, idx) => ({ i, idx }))
+        .filter((i, idx) => i.i !== xPositions[idx])
+        .map((i) => i.idx);
+
       setXPositions(offsets);
+      setMovingBars(newMovingBars);
     }
   }, [inputArr, xPositions.length]);
 
@@ -55,9 +67,12 @@ const SortContainer: React.FC<props> = ({ inputArr, initialInputArr }) => {
           <Bar
             xPos={xPositions[idx]}
             height={50 * i.val}
-            width={10}
+            width={20}
             color="#e91414"
             key={i.id}
+            rank={i.id}
+            barMoving={movingBars.includes(idx)}
+            finishedSorting={finishedSorting}
           />
         );
       })}

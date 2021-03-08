@@ -10,7 +10,7 @@ export interface InputArr {
 
 const App: React.FC<props> = () => {
   const initialInputArr = useRef<InputArr[]>(
-    Array.from(Array(60)).map((_, idx) => ({
+    Array.from(Array(6)).map((_, idx) => ({
       id: idx,
       val: Math.random() * 10,
     }))
@@ -24,6 +24,7 @@ const App: React.FC<props> = () => {
     // ]
   );
   const [inputArr, setInputArr] = useState<InputArr[]>([]);
+  const [isSortingFinished, setIsSortingFinished] = useState(false);
   const counter = useRef(0);
 
   useEffect(() => {
@@ -63,11 +64,12 @@ const App: React.FC<props> = () => {
       }
       // if the first loop is over, stop the intervals
       else {
+        setIsSortingFinished(true);
         clearInterval(intervalId);
         counter.current = 0;
       }
       // TODO: allow for dynamic speed
-    }, 50);
+    }, 1000);
   };
 
   return (
@@ -75,6 +77,7 @@ const App: React.FC<props> = () => {
       <SortContainer
         inputArr={inputArr}
         initialInputArr={initialInputArr.current}
+        finishedSorting={isSortingFinished}
       />
       <button onClick={sort}>sort</button>
     </div>
