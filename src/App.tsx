@@ -38,6 +38,8 @@ const App: React.FC<props> = () => {
     let i = 0;
     let j = 0;
     // initializing vars
+    const sortedArr = [...inputArr].sort((a, b) => a.val - b.val);
+
     const intervalId = setInterval(() => {
       // the main looping
       if (i < inputArr.length - 1) {
@@ -46,6 +48,15 @@ const App: React.FC<props> = () => {
           // the value checker part of the second for loop ☝
           setCounter((prev) => prev + 1);
           // TODO: show iteration count
+          const isSorted = inputArr.every(
+            (i, idx) => i.val === sortedArr[idx].val
+          );
+          if (isSorted) {
+            setIsSortingFinished(true);
+            clearInterval(intervalId);
+            setCounter(0);
+            return;
+          }
 
           if (inputArr[j].val > inputArr[j + 1].val) {
             const temp = inputArr[j];

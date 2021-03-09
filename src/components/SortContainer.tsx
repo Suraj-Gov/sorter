@@ -26,6 +26,7 @@ const SortContainer: React.FC<props> = ({
 
   useEffect(() => {
     if (inputArr.length !== 0) {
+      setMovingBars([]);
       // if the inputArr is not empty
       const barWidth = 25;
       // hard coded barwidth
@@ -57,6 +58,7 @@ const SortContainer: React.FC<props> = ({
       setXPositions(offsets);
       setMovingBars(newMovingBars);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputArr, xPositions.length, initialInputArr.length]);
 
   return (
