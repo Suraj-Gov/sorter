@@ -14,15 +14,6 @@ const App: React.FC<props> = () => {
       id: idx,
       val: Math.round(Math.random() * 10 * 2) / 2 + 1,
     }))
-    // test array
-    // [
-    //   { id: 0, val: 7 },
-    //   { id: 1, val: 6 },
-    //   { id: 2, val: 5 },
-    //   { id: 3, val: 4 },
-    //   { id: 4, val: 3 },
-    //   { id: 5, val: 2 },
-    // ]
   );
   const [inputArr, setInputArr] = useState<InputArr[]>([]);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
@@ -121,7 +112,30 @@ const App: React.FC<props> = () => {
   };
 
   const selectionSort = () => {
-    // TODO
+    let { i, j } = init();
+    i = 1;
+    const intervalId = setInterval(() => {
+      setIntervalId(intervalId);
+      if (i < inputArr.length) {
+        let lowestPos = i - 1;
+        j = i;
+        while (j < inputArr.length) {
+          if (inputArr[j].val < inputArr[lowestPos].val) {
+            lowestPos = j;
+          }
+          j++;
+        }
+        [inputArr[lowestPos], inputArr[i - 1]] = [
+          inputArr[i - 1],
+          inputArr[lowestPos],
+        ];
+        setInputArr([...inputArr]);
+        setCounter((prev) => prev + 1);
+        i++;
+      } else {
+        finish(intervalId);
+      }
+    }, 500);
   };
 
   return (
