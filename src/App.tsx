@@ -33,14 +33,34 @@ const App: React.FC<props> = () => {
     setInputArr(init);
   }, []);
 
-  const bubbleSort = () => {
-    setIsSortingFinished(false);
-    // instead of using loops like for loop, I'm using setInterval
+  const reset = () => {
+    initialInputArr.current = [
+      ...Array.from(Array(10)).map((_, idx) => ({
+        id: idx,
+        val: Math.round(Math.random() * 10 * 2) / 2 + 1,
+      })),
+    ];
+    setInputArr([...initialInputArr.current]);
     setCounter(0);
-    let i = 0;
-    let j = 0;
+    setIsSortingFinished(false);
+  };
+
+  const init = (arr: InputArr[]) => {
+    setIsSortingFinished(false);
+    setCounter(0);
+    const sortedArr = [...arr].sort((a, b) => a.val - b.val);
+    return { i: 0, j: 0, sortedArr };
+  };
+
+  const finish = (intervalId: NodeJS.Timeout) => {
+    setIsSortingFinished(true);
+    clearInterval(intervalId);
+  };
+
+  const bubbleSort = () => {
+    // instead of using loops like for loop, I'm using setInterval
     // initializing vars
-    const sortedArr = [...inputArr].sort((a, b) => a.val - b.val);
+    let { i, j, sortedArr } = init(inputArr);
 
     const intervalId = setInterval(() => {
       // the main looping
@@ -54,8 +74,7 @@ const App: React.FC<props> = () => {
             (i, idx) => i.val === sortedArr[idx].val
           );
           if (isSorted) {
-            setIsSortingFinished(true);
-            clearInterval(intervalId);
+            finish(intervalId);
             return;
           }
 
@@ -77,19 +96,20 @@ const App: React.FC<props> = () => {
       }
       // if the first loop is over, stop the intervals
       else {
-        setIsSortingFinished(true);
-        clearInterval(intervalId);
+        finish(intervalId);
       }
       // TODO: allow for dynamic speed
     }, 500);
   };
 
   const insertionSort = () => {
-    console.log("insertionSort");
+    let { i, j, sortedArr } = init(inputArr);
+    // TODO
   };
 
   const selectionSort = () => {
-    console.log("selectionSort");
+    let { i, j, sortedArr } = init(inputArr);
+    // TODO
   };
 
   return (
@@ -99,7 +119,8 @@ const App: React.FC<props> = () => {
         initialInputArr={initialInputArr.current}
         finishedSorting={isSortingFinished}
       />
-      <p>Steps executed: {counter}</p>
+      <p>TODO: REMOVE THIS -- Steps executed: {counter}</p>
+      <button onClick={reset}>reset</button>
       <div style={{ display: "flex" }}>
         <button
           disabled={!isSortingFinished && counter > 0}
