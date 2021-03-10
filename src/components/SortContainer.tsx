@@ -70,7 +70,6 @@ const SortContainer: React.FC<props> = ({
             xPos={xPositions[idx]}
             height={50 * i.val}
             width={20}
-            color="#c00b0b"
             key={i.id}
             value={i.val}
             barMoving={movingBars.includes(idx)}

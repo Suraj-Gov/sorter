@@ -4,7 +4,6 @@ import styled from "styled-components";
 
 interface props {
   height: number;
-  color?: string;
   active?: boolean;
   width: number;
   xPos: number;
@@ -24,14 +23,13 @@ const BarComponent = styled.div<props>`
   align-items: center;
   padding: 5px 0px;
   background-color: ${(props) =>
-    props.barMoving || props.finishedSorting ? "#ff661f" : props.color};
+    props.barMoving || props.finishedSorting ? "#ff661f" : "#bfa797"};
   transition: background-color 0.2s ease-in-out;
 `;
 
 const Bar: React.FC<props> = ({
   width,
   height,
-  color,
   xPos: xPosProp,
   value,
   barMoving,
@@ -59,7 +57,6 @@ const Bar: React.FC<props> = ({
         ref={barRef}
         height={height}
         width={width}
-        color={color}
         xPos={0}
         barMoving={barMoving}
         finishedSorting={finishedSorting}

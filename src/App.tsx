@@ -33,8 +33,10 @@ const App: React.FC<props> = () => {
     setInputArr(init);
   }, []);
 
-  const sort = () => {
+  const bubbleSort = () => {
+    setIsSortingFinished(false);
     // instead of using loops like for loop, I'm using setInterval
+    setCounter(0);
     let i = 0;
     let j = 0;
     // initializing vars
@@ -54,7 +56,6 @@ const App: React.FC<props> = () => {
           if (isSorted) {
             setIsSortingFinished(true);
             clearInterval(intervalId);
-            setCounter(0);
             return;
           }
 
@@ -78,10 +79,17 @@ const App: React.FC<props> = () => {
       else {
         setIsSortingFinished(true);
         clearInterval(intervalId);
-        setCounter(0);
       }
       // TODO: allow for dynamic speed
     }, 500);
+  };
+
+  const insertionSort = () => {
+    console.log("insertionSort");
+  };
+
+  const selectionSort = () => {
+    console.log("selectionSort");
   };
 
   return (
@@ -91,7 +99,27 @@ const App: React.FC<props> = () => {
         initialInputArr={initialInputArr.current}
         finishedSorting={isSortingFinished}
       />
-      <button onClick={sort}>sort</button>
+      <p>Steps executed: {counter}</p>
+      <div style={{ display: "flex" }}>
+        <button
+          disabled={!isSortingFinished && counter > 0}
+          onClick={bubbleSort}
+        >
+          bubbleSort
+        </button>
+        <button
+          disabled={!isSortingFinished && counter > 0}
+          onClick={insertionSort}
+        >
+          insertionSort
+        </button>
+        <button
+          disabled={!isSortingFinished && counter > 0}
+          onClick={selectionSort}
+        >
+          selectionSort
+        </button>
+      </div>
     </div>
   );
 };
