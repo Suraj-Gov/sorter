@@ -27,7 +27,7 @@ const App: React.FC<props> = () => {
   const [inputArr, setInputArr] = useState<InputArr[]>([]);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
   const [counter, setCounter] = useState(0);
-
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
   useEffect(() => {
     const init = [...initialInputArr.current];
     setInputArr(init);
@@ -40,6 +40,10 @@ const App: React.FC<props> = () => {
         val: Math.round(Math.random() * 10 * 2) / 2 + 1,
       })),
     ];
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(undefined);
+    }
     setInputArr([...initialInputArr.current]);
     setCounter(0);
     setIsSortingFinished(false);
@@ -48,8 +52,7 @@ const App: React.FC<props> = () => {
   const init = (arr: InputArr[]) => {
     setIsSortingFinished(false);
     setCounter(0);
-    const sortedArr = [...arr].sort((a, b) => a.val - b.val);
-    return { i: 0, j: 0, sortedArr };
+    return { i: 0, j: 0 };
   };
 
   const finish = (intervalId: NodeJS.Timeout) => {
@@ -60,9 +63,12 @@ const App: React.FC<props> = () => {
   const bubbleSort = () => {
     // instead of using loops like for loop, I'm using setInterval
     // initializing vars
-    let { i, j, sortedArr } = init(inputArr);
+    let { i, j } = init(inputArr);
 
     const intervalId = setInterval(() => {
+      if (!intervalId) {
+        setIntervalId(intervalId);
+      }
       // the main looping
       if (i < inputArr.length - 1) {
         // the value checker part of the first for loop ☝
@@ -70,14 +76,6 @@ const App: React.FC<props> = () => {
           // the value checker part of the second for loop ☝
           setCounter((prev) => prev + 1);
           // TODO: show iteration count
-          const isSorted = inputArr.every(
-            (i, idx) => i.val === sortedArr[idx].val
-          );
-          if (isSorted) {
-            finish(intervalId);
-            return;
-          }
-
           if (inputArr[j].val > inputArr[j + 1].val) {
             const temp = inputArr[j];
             inputArr[j] = inputArr[j + 1];
@@ -103,12 +101,30 @@ const App: React.FC<props> = () => {
   };
 
   const insertionSort = () => {
-    let { i, j, sortedArr } = init(inputArr);
-    // TODO
+    let { i, j: elPos } = init(inputArr);
+    i = 1;
+    const intervalId = setInterval(() => {
+      if (!intervalId) {
+        setIntervalId(intervalId);
+      }
+      if (i < inputArr.length) {
+        let el = inputArr[i];
+        elPos = i;
+        while (elPos > 0 && inputArr[elPos - 1].val > el.val) {
+          setCounter((prev) => prev + 1);
+          inputArr[elPos] = inputArr[elPos - 1];
+          elPos -= 1;
+        }
+        inputArr[elPos] = el;
+        setInputArr([...inputArr]);
+        i++;
+      } else {
+        finish(intervalId);
+      }
+    }, 500);
   };
 
   const selectionSort = () => {
-    let { i, j, sortedArr } = init(inputArr);
     // TODO
   };
 

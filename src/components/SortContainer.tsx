@@ -63,7 +63,6 @@ const SortContainer: React.FC<props> = ({
 
   return (
     <Container>
-      {/* <Bar xPos={0} height={100} width={10} color={"#e91414"} /> */}
       {initialInputArr.map((i, idx) => {
         return (
           <Bar
