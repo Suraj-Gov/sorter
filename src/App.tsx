@@ -49,7 +49,7 @@ const App: React.FC<props> = () => {
     setIsSortingFinished(false);
   };
 
-  const init = (arr: InputArr[]) => {
+  const init = () => {
     setIsSortingFinished(false);
     setCounter(0);
     return { i: 0, j: 0 };
@@ -63,12 +63,10 @@ const App: React.FC<props> = () => {
   const bubbleSort = () => {
     // instead of using loops like for loop, I'm using setInterval
     // initializing vars
-    let { i, j } = init(inputArr);
+    let { i, j } = init();
 
     const intervalId = setInterval(() => {
-      if (!intervalId) {
-        setIntervalId(intervalId);
-      }
+      setIntervalId(intervalId);
       // the main looping
       if (i < inputArr.length - 1) {
         // the value checker part of the first for loop ☝
@@ -101,12 +99,10 @@ const App: React.FC<props> = () => {
   };
 
   const insertionSort = () => {
-    let { i, j: elPos } = init(inputArr);
+    let { i, j: elPos } = init();
     i = 1;
     const intervalId = setInterval(() => {
-      if (!intervalId) {
-        setIntervalId(intervalId);
-      }
+      setIntervalId(intervalId);
       if (i < inputArr.length) {
         let el = inputArr[i];
         elPos = i;
@@ -131,6 +127,7 @@ const App: React.FC<props> = () => {
   return (
     <div>
       <SortContainer
+        counter={counter}
         inputArr={inputArr}
         initialInputArr={initialInputArr.current}
         finishedSorting={isSortingFinished}
@@ -139,19 +136,19 @@ const App: React.FC<props> = () => {
       <button onClick={reset}>reset</button>
       <div style={{ display: "flex" }}>
         <button
-          disabled={!isSortingFinished && counter > 0}
+          disabled={(!isSortingFinished && counter > 0) || isSortingFinished}
           onClick={bubbleSort}
         >
           bubbleSort
         </button>
         <button
-          disabled={!isSortingFinished && counter > 0}
+          disabled={(!isSortingFinished && counter > 0) || isSortingFinished}
           onClick={insertionSort}
         >
           insertionSort
         </button>
         <button
-          disabled={!isSortingFinished && counter > 0}
+          disabled={(!isSortingFinished && counter > 0) || isSortingFinished}
           onClick={selectionSort}
         >
           selectionSort

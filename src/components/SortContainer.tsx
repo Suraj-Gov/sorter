@@ -11,12 +11,14 @@ const Container = styled.div`
 `;
 
 interface props {
+  counter: number;
   inputArr: InputArr[];
   initialInputArr: InputArr[];
   finishedSorting: boolean;
 }
 
 const SortContainer: React.FC<props> = ({
+  counter,
   inputArr,
   initialInputArr,
   finishedSorting,
@@ -25,7 +27,14 @@ const SortContainer: React.FC<props> = ({
   const [movingBars, setMovingBars] = useState<number[]>([]);
 
   useEffect(() => {
-    if (inputArr.length !== 0) {
+    if (!finishedSorting) {
+      setMovingBars([]);
+      setXPositions((prev) => prev.map((_) => 0));
+    }
+  }, [finishedSorting]);
+
+  useEffect(() => {
+    if (inputArr.length !== 0 && counter > 0) {
       setMovingBars([]);
       // if the inputArr is not empty
       const barWidth = 25;
