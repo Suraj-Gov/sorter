@@ -3,13 +3,13 @@ import SortContainer from "./components/SortContainer";
 
 interface props {}
 
-export interface InputArr {
+export interface Input {
   id: number;
   val: number;
 }
 
 const App: React.FC<props> = () => {
-  const initialInputArr = useRef<InputArr[]>(
+  const initialInputArr = useRef<Input[]>(
     // Array.from(Array(10)).map((_, idx) => ({
     //   id: idx,
     //   val: Math.round(Math.random() * 10 * 2) / 2 + 1,
@@ -27,7 +27,7 @@ const App: React.FC<props> = () => {
       { id: 9, val: 2 },
     ]
   );
-  const [inputArr, setInputArr] = useState<InputArr[]>([]);
+  const [inputArr, setInputArr] = useState<Input[]>([]);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
   const [counter, setCounter] = useState(0);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
@@ -51,6 +51,7 @@ const App: React.FC<props> = () => {
     setInputArr([...initialInputArr.current]);
     setCounter(0);
     setIsSortingFinished(false);
+    setCurrentBar(-1);
   };
 
   const init = () => {
@@ -106,11 +107,56 @@ const App: React.FC<props> = () => {
   };
 
   const insertionSort = () => {
-    // TODO
+    let { i, j: elPos } = init();
+    i = 1;
+    let el: Input;
+    elPos = -1;
+    const intervalId = setInterval(() => {
+      setIntervalId(intervalId);
+      if (i < inputArr.length) {
+        setCurrentBar(i);
+        el = inputArr[i];
+        elPos = i;
+        while (elPos > 0 && inputArr[elPos - 1].val > el.val) {
+          setCounter((c) => c + 1);
+          inputArr[elPos] = inputArr[--elPos];
+        }
+        {
+          inputArr[elPos] = el;
+          i++;
+        }
+        setInputArr([...inputArr]);
+      } else {
+        finish(intervalId);
+      }
+    }, 500);
   };
 
   const selectionSort = () => {
-    // TODO
+    let { i, j } = init();
+    i = 1;
+    const intervalId = setInterval(() => {
+      setIntervalId(intervalId);
+      if (i < inputArr.length) {
+        let lowestPos = i - 1;
+        if (i === 1 || j === inputArr.length) j = i;
+        while (j < inputArr.length) {
+          setCounter((c) => c + 1);
+          if (inputArr[j] < inputArr[lowestPos]) {
+            lowestPos = j;
+          }
+          j++;
+        }
+        [inputArr[lowestPos], inputArr[i - 1]] = [
+          inputArr[i - 1],
+          inputArr[lowestPos],
+        ];
+        setInputArr([...inputArr]);
+        i++;
+      } else {
+        finish(intervalId);
+      }
+    }, 500);
   };
 
   return (

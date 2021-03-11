@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { InputArr } from "../App";
+import { Input } from "../App";
 import Bar from "./Bar";
 
 const Container = styled.div`
@@ -12,8 +12,8 @@ const Container = styled.div`
 
 interface props {
   counter: number;
-  inputArr: InputArr[];
-  initialInputArr: InputArr[];
+  inputArr: Input[];
+  initialInputArr: Input[];
   finishedSorting: boolean;
   currentBar: number;
 }
