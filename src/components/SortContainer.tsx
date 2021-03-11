@@ -15,6 +15,7 @@ interface props {
   inputArr: InputArr[];
   initialInputArr: InputArr[];
   finishedSorting: boolean;
+  currentBar: number;
 }
 
 const SortContainer: React.FC<props> = ({
@@ -22,6 +23,7 @@ const SortContainer: React.FC<props> = ({
   inputArr,
   initialInputArr,
   finishedSorting,
+  currentBar,
 }) => {
   const [xPositions, setXPositions] = useState<number[]>([]);
   const [movingBars, setMovingBars] = useState<number[]>([]);
@@ -75,11 +77,12 @@ const SortContainer: React.FC<props> = ({
       {initialInputArr.map((i, idx) => {
         return (
           <Bar
+            isCurrent={i.id === currentBar}
             xPos={xPositions[idx]}
             height={50 * i.val}
             width={20}
             key={i.id}
-            value={i.val}
+            value={i.id / 2}
             barMoving={movingBars.includes(idx)}
             finishedSorting={finishedSorting}
           />

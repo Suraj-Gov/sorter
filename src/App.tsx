@@ -10,15 +10,28 @@ export interface InputArr {
 
 const App: React.FC<props> = () => {
   const initialInputArr = useRef<InputArr[]>(
-    Array.from(Array(10)).map((_, idx) => ({
-      id: idx,
-      val: Math.round(Math.random() * 10 * 2) / 2 + 1,
-    }))
+    // Array.from(Array(10)).map((_, idx) => ({
+    //   id: idx,
+    //   val: Math.round(Math.random() * 10 * 2) / 2 + 1,
+    // }))
+    [
+      { id: 0, val: 4.5 },
+      { id: 1, val: 7 },
+      { id: 2, val: 5 },
+      { id: 3, val: 5.5 },
+      { id: 4, val: 11 },
+      { id: 5, val: 4 },
+      { id: 6, val: 7 },
+      { id: 7, val: 9.5 },
+      { id: 8, val: 5.5 },
+      { id: 9, val: 2 },
+    ]
   );
   const [inputArr, setInputArr] = useState<InputArr[]>([]);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
   const [counter, setCounter] = useState(0);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
+  const [currentBar, setCurrentBar] = useState(-1);
   useEffect(() => {
     const init = [...initialInputArr.current];
     setInputArr(init);
@@ -69,11 +82,14 @@ const App: React.FC<props> = () => {
             const temp = inputArr[j];
             inputArr[j] = inputArr[j + 1];
             inputArr[j + 1] = temp;
+          } else {
+            setCurrentBar(inputArr[j + 1].id);
           }
           // swap if the left element is more than right element
           setInputArr([...inputArr]);
           // set the array after swapping
           j++;
+          // setCurrentBar(i + j);
           // increment second loop variable
         } else {
           // if the second loop is finished, reset second loop var, increment first loop var
@@ -90,52 +106,11 @@ const App: React.FC<props> = () => {
   };
 
   const insertionSort = () => {
-    let { i, j: elPos } = init();
-    i = 1;
-    const intervalId = setInterval(() => {
-      setIntervalId(intervalId);
-      if (i < inputArr.length) {
-        let el = inputArr[i];
-        elPos = i;
-        while (elPos > 0 && inputArr[elPos - 1].val > el.val) {
-          setCounter((prev) => prev + 1);
-          inputArr[elPos] = inputArr[elPos - 1];
-          elPos -= 1;
-        }
-        inputArr[elPos] = el;
-        setInputArr([...inputArr]);
-        i++;
-      } else {
-        finish(intervalId);
-      }
-    }, 500);
+    // TODO
   };
 
   const selectionSort = () => {
-    let { i, j } = init();
-    i = 1;
-    const intervalId = setInterval(() => {
-      setIntervalId(intervalId);
-      if (i < inputArr.length) {
-        let lowestPos = i - 1;
-        j = i;
-        while (j < inputArr.length) {
-          if (inputArr[j].val < inputArr[lowestPos].val) {
-            lowestPos = j;
-          }
-          j++;
-        }
-        [inputArr[lowestPos], inputArr[i - 1]] = [
-          inputArr[i - 1],
-          inputArr[lowestPos],
-        ];
-        setInputArr([...inputArr]);
-        setCounter((prev) => prev + 1);
-        i++;
-      } else {
-        finish(intervalId);
-      }
-    }, 500);
+    // TODO
   };
 
   return (
@@ -145,8 +120,9 @@ const App: React.FC<props> = () => {
         inputArr={inputArr}
         initialInputArr={initialInputArr.current}
         finishedSorting={isSortingFinished}
+        currentBar={currentBar}
       />
-      <p>TODO: REMOVE THIS -- Steps executed: {counter}</p>
+      <p>Steps executed: {counter}</p>
       <button onClick={reset}>reset</button>
       <div style={{ display: "flex" }}>
         <button

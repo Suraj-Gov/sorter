@@ -10,6 +10,7 @@ interface props {
   value?: number;
   barMoving: boolean;
   finishedSorting: boolean;
+  isCurrent: boolean;
 }
 
 const BarComponent = styled.div<props>`
@@ -22,8 +23,13 @@ const BarComponent = styled.div<props>`
   justify-content: flex-end;
   align-items: center;
   padding: 5px 0px;
+  background-color: ${(props) => (props.isCurrent ? "blue" : "")};
   background-color: ${(props) =>
-    props.barMoving || props.finishedSorting ? "#ff661f" : "#bfa797"};
+    props.barMoving || props.finishedSorting
+      ? "#ff661f"
+      : props.isCurrent
+      ? "#818181"
+      : "#bfa797"};
   transition: background-color 0.2s ease-in-out;
 `;
 
@@ -34,6 +40,7 @@ const Bar: React.FC<props> = ({
   value,
   barMoving,
   finishedSorting,
+  isCurrent,
 }) => {
   const barRef = useRef<HTMLDivElement>(null);
 
@@ -54,6 +61,7 @@ const Bar: React.FC<props> = ({
   return (
     <div>
       <BarComponent
+        isCurrent={isCurrent}
         ref={barRef}
         height={height}
         width={width}
