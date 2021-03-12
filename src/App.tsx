@@ -10,22 +10,22 @@ export interface Input {
 
 const App: React.FC<props> = () => {
   const initialInputArr = useRef<Input[]>(
-    // Array.from(Array(10)).map((_, idx) => ({
-    //   id: idx,
-    //   val: Math.round(Math.random() * 10 * 2) / 2 + 1,
-    // }))
-    [
-      { id: 0, val: 4.5 },
-      { id: 1, val: 7 },
-      { id: 2, val: 5 },
-      { id: 3, val: 5.5 },
-      { id: 4, val: 11 },
-      { id: 5, val: 4 },
-      { id: 6, val: 7 },
-      { id: 7, val: 9.5 },
-      { id: 8, val: 5.5 },
-      { id: 9, val: 2 },
-    ]
+    Array.from(Array(10)).map((_, idx) => ({
+      id: idx,
+      val: Math.round(Math.random() * 10 * 2) / 2 + 1,
+    }))
+    // [
+    //   { id: 0, val: 4.5 },
+    //   { id: 1, val: 7 },
+    //   { id: 2, val: 5 },
+    //   { id: 3, val: 5.5 },
+    //   { id: 4, val: 11 },
+    //   { id: 5, val: 4 },
+    //   { id: 6, val: 7 },
+    //   { id: 7, val: 9.5 },
+    //   { id: 8, val: 5.5 },
+    //   { id: 9, val: 2 },
+    // ]
   );
   const [inputArr, setInputArr] = useState<Input[]>([]);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
@@ -118,18 +118,16 @@ const App: React.FC<props> = () => {
     let key: Input;
     const intervalId = setInterval(() => {
       setIntervalId(intervalId);
+      setCounter((c) => c + 1);
       debugger;
       if (i < inputArr.length) {
         if (j === -9) {
           key = inputArr[i];
-        }
-        if (j === -9) {
           j = i - 1;
         }
         // the while loop ⬇
         if (j >= 0 && inputArr[j].val > key.val) {
           setCurrentBar(inputArr[j].id);
-          setCounter((c) => c + 1);
           inputArr[j + 1] = inputArr[j];
           j = j - 1;
         } else {
@@ -148,24 +146,32 @@ const App: React.FC<props> = () => {
   const selectionSort = () => {
     let { i, j } = init();
     i = 1;
+    j = -9;
+    let lowestPos: number;
     const intervalId = setInterval(() => {
+      debugger;
       setIntervalId(intervalId);
+      setCounter((c) => c + 1);
       if (i < inputArr.length) {
-        let lowestPos = i - 1;
-        if (i === 1 || j === inputArr.length) j = i;
-        while (j < inputArr.length) {
-          setCounter((c) => c + 1);
-          if (inputArr[j] < inputArr[lowestPos]) {
+        if (j === -9) {
+          lowestPos = i - 1;
+          j = i;
+        }
+        setCurrentBar(inputArr[j - 1].id);
+        if (j < inputArr.length) {
+          if (inputArr[j].val < inputArr[lowestPos].val) {
             lowestPos = j;
           }
           j++;
+        } else {
+          [inputArr[lowestPos], inputArr[i - 1]] = [
+            inputArr[i - 1],
+            inputArr[lowestPos],
+          ];
+          setInputArr([...inputArr]);
+          i++;
+          j = -9;
         }
-        [inputArr[lowestPos], inputArr[i - 1]] = [
-          inputArr[i - 1],
-          inputArr[lowestPos],
-        ];
-        setInputArr([...inputArr]);
-        i++;
       } else {
         finish(intervalId);
       }
