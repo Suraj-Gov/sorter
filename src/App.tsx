@@ -32,6 +32,7 @@ const App: React.FC<props> = () => {
   const [counter, setCounter] = useState(0);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
   const [currentBar, setCurrentBar] = useState(-1);
+  const speedRef = useRef(500);
   useEffect(() => {
     const init = [...initialInputArr.current];
     setInputArr(init);
@@ -63,6 +64,7 @@ const App: React.FC<props> = () => {
   const finish = (intervalId: NodeJS.Timeout) => {
     setIsSortingFinished(true);
     clearInterval(intervalId);
+    setCurrentBar(-1);
   };
 
   const bubbleSort = () => {
@@ -103,33 +105,44 @@ const App: React.FC<props> = () => {
         finish(intervalId);
       }
       // TODO: allow for dynamic speed
-    }, 500);
+    }, speedRef.current);
   };
 
   const insertionSort = () => {
-    let { i, j: elPos } = init();
+    let { i, j } = init();
+    // -9 only when the var needs to be reinitialized
+    // in while loops, the vars need to retain their prev values
+    // if they need to be changed after the while loop is finished, set them to -9
+    j = -9;
     i = 1;
-    let el: Input;
-    elPos = -1;
+    let key: Input;
     const intervalId = setInterval(() => {
       setIntervalId(intervalId);
+      debugger;
       if (i < inputArr.length) {
-        setCurrentBar(i);
-        el = inputArr[i];
-        elPos = i;
-        while (elPos > 0 && inputArr[elPos - 1].val > el.val) {
+        if (j === -9) {
+          key = inputArr[i];
+        }
+        if (j === -9) {
+          j = i - 1;
+        }
+        // the while loop ⬇
+        if (j >= 0 && inputArr[j].val > key.val) {
+          setCurrentBar(inputArr[j].id);
           setCounter((c) => c + 1);
-          inputArr[elPos] = inputArr[--elPos];
-        }
-        {
-          inputArr[elPos] = el;
+          inputArr[j + 1] = inputArr[j];
+          j = j - 1;
+        } else {
+          // the part after the while loop ⬇
+          inputArr[j + 1] = key;
+          j = -9;
           i++;
+          setInputArr([...inputArr]);
         }
-        setInputArr([...inputArr]);
       } else {
         finish(intervalId);
       }
-    }, 500);
+    }, speedRef.current);
   };
 
   const selectionSort = () => {
@@ -156,7 +169,7 @@ const App: React.FC<props> = () => {
       } else {
         finish(intervalId);
       }
-    }, 500);
+    }, speedRef.current);
   };
 
   return (

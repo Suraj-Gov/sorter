@@ -14,6 +14,7 @@ interface props {
 }
 
 const BarComponent = styled.div<props>`
+  border-bottom: 0px solid black;
   height: ${(props) => props.height + "px"};
   width: ${(props) => props.width + "px"};
   margin-right: 5px;
@@ -25,12 +26,9 @@ const BarComponent = styled.div<props>`
   padding: 5px 0px;
   background-color: ${(props) => (props.isCurrent ? "blue" : "")};
   background-color: ${(props) =>
-    props.barMoving || props.finishedSorting
-      ? "#ff661f"
-      : props.isCurrent
-      ? "#818181"
-      : "#bfa797"};
-  transition: background-color 0.2s ease-in-out;
+    props.barMoving || props.finishedSorting ? "#ff661f" : "#bfa797"};
+  transition: background-color 0.2s ease-in-out, border 0.15s ease-in-out;
+  border-bottom: ${(props) => `${props.isCurrent ? 8.5 : 0}px solid red`};
 `;
 
 const Bar: React.FC<props> = ({
