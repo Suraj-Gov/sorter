@@ -10,28 +10,27 @@ export interface Input {
 
 const App: React.FC<props> = () => {
   const initialInputArr = useRef<Input[]>(
-    Array.from(Array(10)).map((_, idx) => ({
-      id: idx,
-      val: Math.round(Math.random() * 10 * 2) / 2 + 1,
-    }))
-    // [
-    //   { id: 0, val: 4.5 },
-    //   { id: 1, val: 7 },
-    //   { id: 2, val: 5 },
-    //   { id: 3, val: 5.5 },
-    //   { id: 4, val: 11 },
-    //   { id: 5, val: 4 },
-    //   { id: 6, val: 7 },
-    //   { id: 7, val: 9.5 },
-    //   { id: 8, val: 5.5 },
-    //   { id: 9, val: 2 },
-    // ]
+    // Array.from(Array(10)).map((_, idx) => ({
+    //   id: idx,
+    //   val: Math.round(Math.random() * 10 * 2) / 2 + 1,
+    // }))
+    [
+      { id: 0, val: 4.5 },
+      { id: 1, val: 7 },
+      { id: 2, val: 5 },
+      { id: 3, val: 5.5 },
+      { id: 4, val: 11 },
+      { id: 5, val: 4 },
+      { id: 6, val: 7 },
+      { id: 7, val: 9.5 },
+      { id: 8, val: 5.5 },
+    ]
   );
   const [inputArr, setInputArr] = useState<Input[]>([]);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
   const [counter, setCounter] = useState(0);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
-  const [currentBar, setCurrentBar] = useState(-1);
+  const [currentBar, setCurrentBar] = useState([-1]);
   const speedRef = useRef(500);
   useEffect(() => {
     const init = [...initialInputArr.current];
@@ -52,7 +51,7 @@ const App: React.FC<props> = () => {
     setInputArr([...initialInputArr.current]);
     setCounter(0);
     setIsSortingFinished(false);
-    setCurrentBar(-1);
+    setCurrentBar([-1]);
   };
 
   const init = () => {
@@ -64,7 +63,7 @@ const App: React.FC<props> = () => {
   const finish = (intervalId: NodeJS.Timeout) => {
     setIsSortingFinished(true);
     clearInterval(intervalId);
-    setCurrentBar(-1);
+    setCurrentBar([-1]);
   };
 
   const bubbleSort = () => {
@@ -86,7 +85,7 @@ const App: React.FC<props> = () => {
             inputArr[j] = inputArr[j + 1];
             inputArr[j + 1] = temp;
           } else {
-            setCurrentBar(inputArr[j + 1].id);
+            setCurrentBar([inputArr[j + 1].id]);
           }
           // swap if the left element is more than right element
           setInputArr([...inputArr]);
@@ -127,7 +126,7 @@ const App: React.FC<props> = () => {
         }
         // the while loop ⬇
         if (j >= 0 && inputArr[j].val > key.val) {
-          setCurrentBar(inputArr[j].id);
+          setCurrentBar([inputArr[j].id]);
           inputArr[j + 1] = inputArr[j];
           j = j - 1;
         } else {
@@ -157,7 +156,7 @@ const App: React.FC<props> = () => {
           lowestPos = i - 1;
           j = i;
         }
-        setCurrentBar(inputArr[j - 1].id);
+        setCurrentBar([inputArr[j - 1].id]);
         if (j < inputArr.length) {
           if (inputArr[j].val < inputArr[lowestPos].val) {
             lowestPos = j;
@@ -178,6 +177,14 @@ const App: React.FC<props> = () => {
     }, speedRef.current);
   };
 
+  const mergeSort = () => {
+    let { i, j } = init();
+    let k = 0;
+    const intervalId = setInterval(() => {
+      setIntervalId(intervalId);
+    }, 2000);
+  };
+
   return (
     <div>
       <SortContainer
@@ -190,24 +197,20 @@ const App: React.FC<props> = () => {
       <p>Steps executed: {counter}</p>
       <button onClick={reset}>reset</button>
       <div style={{ display: "flex" }}>
-        <button
-          disabled={(!isSortingFinished && counter > 0) || isSortingFinished}
-          onClick={bubbleSort}
-        >
-          bubbleSort
-        </button>
-        <button
-          disabled={(!isSortingFinished && counter > 0) || isSortingFinished}
-          onClick={insertionSort}
-        >
-          insertionSort
-        </button>
-        <button
-          disabled={(!isSortingFinished && counter > 0) || isSortingFinished}
-          onClick={selectionSort}
-        >
-          selectionSort
-        </button>
+        {[
+          { name: "bubbleSort", fn: bubbleSort },
+          { name: "insertionSort", fn: insertionSort },
+          { name: "selectionSort", fn: selectionSort },
+          { name: "mergeSort", fn: mergeSort },
+        ].map((sorter) => (
+          <button
+            key={sorter.name}
+            disabled={(!isSortingFinished && counter > 0) || isSortingFinished}
+            onClick={sorter.fn}
+          >
+            {sorter.name}
+          </button>
+        ))}
       </div>
     </div>
   );

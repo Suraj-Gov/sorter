@@ -15,7 +15,7 @@ interface props {
   inputArr: Input[];
   initialInputArr: Input[];
   finishedSorting: boolean;
-  currentBar: number;
+  currentBar: number[];
 }
 
 const SortContainer: React.FC<props> = ({
@@ -77,7 +77,7 @@ const SortContainer: React.FC<props> = ({
       {initialInputArr.map((i, idx) => {
         return (
           <Bar
-            isCurrent={i.id === currentBar}
+            isCurrent={currentBar.includes(i.id)}
             xPos={xPositions[idx]}
             height={50 * i.val}
             width={20}
