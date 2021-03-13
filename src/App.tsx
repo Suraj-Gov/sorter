@@ -1,3 +1,4 @@
+// this is a really big App.tsx
 import React, { useEffect, useRef, useState } from "react";
 import SortContainer from "./components/SortContainer";
 
@@ -31,11 +32,18 @@ const App: React.FC<props> = () => {
   const [counter, setCounter] = useState(0);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
   const [currentBar, setCurrentBar] = useState([-1]);
+  const sortedArr = useRef<Input[]>([]);
   const speedRef = useRef(500);
   useEffect(() => {
     const init = [...initialInputArr.current];
     setInputArr(init);
   }, []);
+
+  useEffect(() => {
+    sortedArr.current = [...initialInputArr.current].sort(
+      (a, b) => a.val - b.val
+    );
+  }, [isSortingFinished]);
 
   const reset = () => {
     initialInputArr.current = [
@@ -210,7 +218,12 @@ const App: React.FC<props> = () => {
             mid++;
             setInputArr([...inputArr]);
             setCounter((c) => c + 1);
-            if (start === end && end === initialInputArr.current.length - 1) {
+
+            if (
+              sortedArr.current
+                .map((i) => i.val)
+                .every((currentVal, idx) => currentVal === inputArr[idx].val)
+            ) {
               finish();
             }
           }
