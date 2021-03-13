@@ -10,21 +10,21 @@ export interface Input {
 
 const App: React.FC<props> = () => {
   const initialInputArr = useRef<Input[]>(
-    // Array.from(Array(10)).map((_, idx) => ({
-    //   id: idx,
-    //   val: Math.round(Math.random() * 10 * 2) / 2 + 1,
-    // }))
-    [
-      { id: 0, val: 4.5 },
-      { id: 1, val: 7 },
-      { id: 2, val: 5 },
-      { id: 3, val: 5.5 },
-      { id: 4, val: 11 },
-      { id: 5, val: 4 },
-      { id: 6, val: 7 },
-      { id: 7, val: 9.5 },
-      { id: 8, val: 5.5 },
-    ]
+    Array.from(Array(30)).map((_, idx) => ({
+      id: idx,
+      val: Math.round(Math.random() * 10 * 2) / 2 + 1,
+    }))
+    // [
+    //   { id: 0, val: 4.5 },
+    //   { id: 1, val: 7 },
+    //   { id: 2, val: 5 },
+    //   { id: 3, val: 5.5 },
+    //   { id: 4, val: 11 },
+    //   { id: 5, val: 4 },
+    //   { id: 6, val: 7 },
+    //   { id: 7, val: 9.5 },
+    //   { id: 8, val: 5.5 },
+    // ]
   );
   const [inputArr, setInputArr] = useState<Input[]>([]);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
@@ -60,9 +60,9 @@ const App: React.FC<props> = () => {
     return { i: 0, j: 0 };
   };
 
-  const finish = (intervalId: NodeJS.Timeout) => {
+  const finish = (intervalId?: NodeJS.Timeout) => {
     setIsSortingFinished(true);
-    clearInterval(intervalId);
+    if (intervalId) clearInterval(intervalId);
     setCurrentBar([-1]);
   };
 
@@ -177,12 +177,57 @@ const App: React.FC<props> = () => {
     }, speedRef.current);
   };
 
+  const mergeDelayCounter = useRef(0);
   const mergeSort = () => {
-    let { i, j } = init();
-    let k = 0;
-    const intervalId = setInterval(() => {
-      setIntervalId(intervalId);
-    }, 2000);
+    init();
+    const merge = (
+      inputArr: Input[],
+      start: number,
+      mid: number,
+      end: number
+    ) => {
+      mergeDelayCounter.current++;
+      setTimeout(() => {
+        setCurrentBar(inputArr.slice(start, end).map((i) => i.id));
+        let start2 = mid + 1;
+        if (inputArr[mid].val <= inputArr[start2].val) {
+          setCounter((c) => c + 1);
+          return;
+        }
+        while (start <= mid && start2 <= end) {
+          if (inputArr[start].val <= inputArr[start2].val) {
+            start++;
+          } else {
+            const val = inputArr[start2];
+            let idx = start2;
+            while (idx !== start) {
+              inputArr[idx] = inputArr[idx - 1];
+              idx--;
+            }
+            inputArr[start] = val;
+            start++;
+            start2++;
+            mid++;
+            setInputArr([...inputArr]);
+            setCounter((c) => c + 1);
+            if (start === end && end === initialInputArr.current.length - 1) {
+              finish();
+            }
+          }
+        }
+      }, speedRef.current * mergeDelayCounter.current);
+    };
+    const mergeSort = (inputArr: Input[], l: number, h: number) => {
+      if (l < h) {
+        const mid = Math.floor((l + h) / 2);
+        mergeSort(inputArr, l, mid);
+        mergeSort(inputArr, mid + 1, h);
+        merge(inputArr, l, mid, h);
+      }
+    };
+
+    mergeDelayCounter.current = 0;
+    mergeSort(inputArr, 0, initialInputArr.current.length - 1);
   };
 
   return (
