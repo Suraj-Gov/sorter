@@ -9,8 +9,15 @@ export interface Input {
   val: number;
 }
 
+const checkIfSortingIsComplete = (sortedArr: Input[], inputArr: Input[]) => {
+  return sortedArr
+    .map((i) => i.val)
+    .every((currentVal, idx) => currentVal === inputArr[idx].val);
+};
+
 const App: React.FC<props> = () => {
   const initialInputArr = useRef<Input[]>([
+    // this will be the values of test array
     { id: 0, val: 4.5 },
     { id: 1, val: 7 },
     { id: 2, val: 5 },
@@ -30,7 +37,7 @@ const App: React.FC<props> = () => {
   const speedRef = useRef(500);
   const sortDelayCounter = useRef(0);
   useEffect(() => {
-    // reset();
+    reset();
     const init = [...initialInputArr.current];
     setInputArr(init);
     // if I add reset to the dep array, it calls it on every render
@@ -218,11 +225,7 @@ const App: React.FC<props> = () => {
             setInputArr([...inputArr]);
             setCounter((c) => c + 1);
 
-            if (
-              sortedArr.current
-                .map((i) => i.val)
-                .every((currentVal, idx) => currentVal === inputArr[idx].val)
-            ) {
+            if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
               finish();
             }
           }
@@ -242,33 +245,73 @@ const App: React.FC<props> = () => {
   };
 
   const quickSort = () => {
-    const partition = (inputArr: Input[], start: number, end: number) => {
-      const pivot = inputArr[end];
-      let comparisonIdx = start;
-      for (let i = start; i < end; i++) {
-        if (inputArr[comparisonIdx].val <= pivot.val) {
-          [inputArr[i], inputArr[comparisonIdx]] = [
-            inputArr[comparisonIdx],
-            inputArr[i],
-          ];
-          setInputArr([...inputArr]);
-        }
-        comparisonIdx++;
-      }
-      [inputArr[comparisonIdx], inputArr[end]] = [
-        inputArr[end],
-        inputArr[comparisonIdx],
-      ];
-      setInputArr([...inputArr]);
-      return comparisonIdx;
-    };
-
+    // https://www.geeksforgeeks.org/iterative-quick-sort/
+    // here the quick sort function is being run iteratively instead of recursively,
+    // the stack holds the values instead of the function call stack if in recursion
+    let { i, j: comparisonIdx } = init();
     const quickSort = (inputArr: Input[], start: number, end: number) => {
-      if (start < end) {
-        const p = partition(inputArr, start, end);
-        quickSort(inputArr, start, p - 1);
-        quickSort(inputArr, p + 1, end);
-      }
+      let stack: number[] = [];
+      let top = -1;
+      let isPartitioning = false;
+      i = -1;
+      comparisonIdx = -1;
+      stack[++top] = start;
+      stack[++top] = end;
+      const intervalId = setInterval(() => {
+        // debugger;
+        setCounter((c) => c + 1);
+        setIntervalId(intervalId);
+        if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
+          console.log("finished");
+          finish(intervalId);
+        }
+        if (top >= 0 || isPartitioning) {
+          if (!isPartitioning) {
+            end = stack[top--];
+            start = stack[top--];
+          }
+          // partitioning
+          // suppposed to return comparisonIdx
+          isPartitioning = true;
+          const pivot = inputArr[end];
+          if (comparisonIdx === -1) {
+            comparisonIdx = start;
+            i = start;
+          }
+          if (i < end) {
+            setCurrentBar([inputArr[i].id, pivot.id]);
+            if (inputArr[i].val <= pivot.val) {
+              [inputArr[i], inputArr[comparisonIdx]] = [
+                inputArr[comparisonIdx],
+                inputArr[i],
+              ];
+              setInputArr([...inputArr]);
+              comparisonIdx++;
+            }
+            i++;
+          } else {
+            [inputArr[comparisonIdx], inputArr[end]] = [
+              inputArr[end],
+              inputArr[comparisonIdx],
+            ];
+            setInputArr([...inputArr]);
+            if (comparisonIdx - 1 > start) {
+              stack[++top] = start;
+              stack[++top] = comparisonIdx - 1;
+            }
+            if (comparisonIdx + 1 < end) {
+              stack[++top] = comparisonIdx + 1;
+              stack[++top] = end;
+            }
+            // I could use pop, but that's giving me a weird TS error
+            // it says that I cannot assign a (number | undefined) type to number
+            // that could be because a pop might return undefined when the array is empty
+            isPartitioning = false;
+            comparisonIdx = -1;
+            i = -1;
+          }
+        }
+      }, speedRef.current);
     };
 
     quickSort(inputArr, 0, inputArr.length - 1);
