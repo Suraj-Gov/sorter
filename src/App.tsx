@@ -9,24 +9,25 @@ export interface Input {
   val: number;
 }
 
+const checkIfSortingIsComplete = (sortedArr: Input[], inputArr: Input[]) => {
+  return sortedArr
+    .map((i) => i.val)
+    .every((currentVal, idx) => currentVal === inputArr[idx].val);
+};
+
 const App: React.FC<props> = () => {
-  const initialInputArr = useRef<Input[]>(
-    Array.from(Array(30)).map((_, idx) => ({
-      id: idx,
-      val: Math.round(Math.random() * 10 * 2) / 2 + 1,
-    }))
-    // [
-    //   { id: 0, val: 4.5 },
-    //   { id: 1, val: 7 },
-    //   { id: 2, val: 5 },
-    //   { id: 3, val: 5.5 },
-    //   { id: 4, val: 11 },
-    //   { id: 5, val: 4 },
-    //   { id: 6, val: 7 },
-    //   { id: 7, val: 9.5 },
-    //   { id: 8, val: 5.5 },
-    // ]
-  );
+  const initialInputArr = useRef<Input[]>([
+    // this will be the values of test array
+    { id: 0, val: 4.5 },
+    { id: 1, val: 7 },
+    { id: 2, val: 5 },
+    { id: 3, val: 5.5 },
+    { id: 4, val: 11 },
+    { id: 5, val: 4 },
+    { id: 6, val: 7 },
+    { id: 7, val: 9.5 },
+    { id: 8, val: 5.5 },
+  ]);
   const [inputArr, setInputArr] = useState<Input[]>([]);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
   const [counter, setCounter] = useState(0);
@@ -34,9 +35,13 @@ const App: React.FC<props> = () => {
   const [currentBar, setCurrentBar] = useState([-1]);
   const sortedArr = useRef<Input[]>([]);
   const speedRef = useRef(500);
+  const sortDelayCounter = useRef(0);
   useEffect(() => {
+    reset();
     const init = [...initialInputArr.current];
     setInputArr(init);
+    // if I add reset to the dep array, it calls it on every render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -46,8 +51,9 @@ const App: React.FC<props> = () => {
   }, [isSortingFinished]);
 
   const reset = () => {
+    setCurrentBar([-1]);
     initialInputArr.current = [
-      ...Array.from(Array(10)).map((_, idx) => ({
+      ...Array.from(Array(30)).map((_, idx) => ({
         id: idx,
         val: Math.round(Math.random() * 10 * 2) / 2 + 1,
       })),
@@ -59,10 +65,10 @@ const App: React.FC<props> = () => {
     setInputArr([...initialInputArr.current]);
     setCounter(0);
     setIsSortingFinished(false);
-    setCurrentBar([-1]);
   };
 
   const init = () => {
+    sortDelayCounter.current = 0;
     setIsSortingFinished(false);
     setCounter(0);
     return { i: 0, j: 0 };
@@ -185,7 +191,6 @@ const App: React.FC<props> = () => {
     }, speedRef.current);
   };
 
-  const mergeDelayCounter = useRef(0);
   const mergeSort = () => {
     init();
     const merge = (
@@ -194,8 +199,9 @@ const App: React.FC<props> = () => {
       mid: number,
       end: number
     ) => {
-      mergeDelayCounter.current++;
-      setTimeout(() => {
+      sortDelayCounter.current++;
+      const timeoutId = setTimeout(() => {
+        setIntervalId(timeoutId);
         setCurrentBar(inputArr.slice(start, end).map((i) => i.id));
         let start2 = mid + 1;
         if (inputArr[mid].val <= inputArr[start2].val) {
@@ -219,16 +225,12 @@ const App: React.FC<props> = () => {
             setInputArr([...inputArr]);
             setCounter((c) => c + 1);
 
-            if (
-              sortedArr.current
-                .map((i) => i.val)
-                .every((currentVal, idx) => currentVal === inputArr[idx].val)
-            ) {
+            if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
               finish();
             }
           }
         }
-      }, speedRef.current * mergeDelayCounter.current);
+      }, speedRef.current * sortDelayCounter.current);
     };
     const mergeSort = (inputArr: Input[], l: number, h: number) => {
       if (l < h) {
@@ -239,8 +241,80 @@ const App: React.FC<props> = () => {
       }
     };
 
-    mergeDelayCounter.current = 0;
     mergeSort(inputArr, 0, initialInputArr.current.length - 1);
+  };
+
+  const quickSort = () => {
+    // https://www.geeksforgeeks.org/iterative-quick-sort/
+    // here the quick sort function is being run iteratively instead of recursively,
+    // the stack holds the values instead of the function call stack if in recursion
+    let { i, j: comparisonIdx } = init();
+    const quickSort = (inputArr: Input[], start: number, end: number) => {
+      let stack: number[] = [];
+      let top = -1;
+      let isPartitioning = false;
+      i = -1;
+      comparisonIdx = -1;
+      stack[++top] = start;
+      stack[++top] = end;
+      const intervalId = setInterval(() => {
+        // debugger;
+        setCounter((c) => c + 1);
+        setIntervalId(intervalId);
+        if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
+          console.log("finished");
+          finish(intervalId);
+        }
+        if (top >= 0 || isPartitioning) {
+          if (!isPartitioning) {
+            end = stack[top--];
+            start = stack[top--];
+          }
+          // partitioning
+          // suppposed to return comparisonIdx
+          isPartitioning = true;
+          const pivot = inputArr[end];
+          if (comparisonIdx === -1) {
+            comparisonIdx = start;
+            i = start;
+          }
+          if (i < end) {
+            setCurrentBar([inputArr[i].id, pivot.id]);
+            if (inputArr[i].val <= pivot.val) {
+              [inputArr[i], inputArr[comparisonIdx]] = [
+                inputArr[comparisonIdx],
+                inputArr[i],
+              ];
+              setInputArr([...inputArr]);
+              comparisonIdx++;
+            }
+            i++;
+          } else {
+            [inputArr[comparisonIdx], inputArr[end]] = [
+              inputArr[end],
+              inputArr[comparisonIdx],
+            ];
+            setInputArr([...inputArr]);
+            if (comparisonIdx - 1 > start) {
+              stack[++top] = start;
+              stack[++top] = comparisonIdx - 1;
+            }
+            if (comparisonIdx + 1 < end) {
+              stack[++top] = comparisonIdx + 1;
+              stack[++top] = end;
+            }
+            // I could use pop, but that's giving me a weird TS error
+            // it says that I cannot assign a (number | undefined) type to number
+            // that could be because a pop might return undefined when the array is empty
+            isPartitioning = false;
+            comparisonIdx = -1;
+            i = -1;
+          }
+        }
+      }, speedRef.current);
+    };
+
+    quickSort(inputArr, 0, inputArr.length - 1);
   };
 
   return (
@@ -260,6 +334,7 @@ const App: React.FC<props> = () => {
           { name: "insertionSort", fn: insertionSort },
           { name: "selectionSort", fn: selectionSort },
           { name: "mergeSort", fn: mergeSort },
+          { name: "quickSort", fn: quickSort },
         ].map((sorter) => (
           <button
             key={sorter.name}

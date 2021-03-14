@@ -36,6 +36,12 @@ const SortContainer: React.FC<props> = ({
   }, [finishedSorting]);
 
   useEffect(() => {
+    if (currentBar[0] === -1) {
+      setMovingBars([]);
+    }
+  }, [currentBar]);
+
+  useEffect(() => {
     if (inputArr.length !== 0 && counter > 0) {
       setMovingBars([]);
       // if the inputArr is not empty
