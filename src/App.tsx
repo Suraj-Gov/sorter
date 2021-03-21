@@ -34,7 +34,7 @@ const App: React.FC<props> = () => {
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
   const [currentBar, setCurrentBar] = useState([-1]);
   const sortedArr = useRef<Input[]>([]);
-  const speedRef = useRef(500);
+  const speedRef = useRef(5000);
   const sortDelayCounter = useRef(0);
   useEffect(() => {
     reset();
@@ -84,7 +84,7 @@ const App: React.FC<props> = () => {
     // instead of using loops like for loop, I'm using setInterval
     // initializing vars
     let { i, j } = init();
-
+    setCurrentBar([inputArr[j].id, inputArr[j + 1].id]);
     const intervalId = setInterval(() => {
       setIntervalId(intervalId);
       // the main looping
@@ -99,10 +99,11 @@ const App: React.FC<props> = () => {
             inputArr[j] = inputArr[j + 1];
             inputArr[j + 1] = temp;
           } else {
-            setCurrentBar([inputArr[j + 1].id]);
+            setCurrentBar([inputArr[j + 1].id, inputArr[j].id]);
           }
           // swap if the left element is more than right element
           setInputArr([...inputArr]);
+          setCurrentBar([inputArr[j + 2]?.id, inputArr[j + 1].id]);
           // set the array after swapping
           j++;
           // setCurrentBar(i + j);
@@ -132,7 +133,6 @@ const App: React.FC<props> = () => {
     const intervalId = setInterval(() => {
       setIntervalId(intervalId);
       setCounter((c) => c + 1);
-      debugger;
       if (i < inputArr.length) {
         if (j === -9) {
           key = inputArr[i];
@@ -140,13 +140,14 @@ const App: React.FC<props> = () => {
         }
         // the while loop ⬇
         if (j >= 0 && inputArr[j].val > key.val) {
-          setCurrentBar([inputArr[j].id]);
           inputArr[j + 1] = inputArr[j];
           j = j - 1;
+          setCurrentBar([inputArr[j]?.id, inputArr[i]?.id]);
         } else {
           // the part after the while loop ⬇
           inputArr[j + 1] = key;
           j = -9;
+          setCurrentBar([inputArr[i]?.id]);
           i++;
           setInputArr([...inputArr]);
         }
