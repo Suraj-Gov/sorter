@@ -321,6 +321,10 @@ const App: React.FC<props> = () => {
     quickSort(inputArr, 0, inputArr.length - 1);
   };
 
+  const shellSort = () => {
+    console.log("hello");
+  };
+
   return (
     <div>
       <SortContainer
@@ -335,10 +339,11 @@ const App: React.FC<props> = () => {
       <div style={{ display: "flex" }}>
         {[
           { name: "bubbleSort", fn: bubbleSort },
-          { name: "insertionSort", fn: insertionSort },
           { name: "selectionSort", fn: selectionSort },
+          { name: "insertionSort", fn: insertionSort },
           { name: "mergeSort", fn: mergeSort },
           { name: "quickSort", fn: quickSort },
+          { name: "shellSort", fn: shellSort },
         ].map((sorter) => (
           <button
             key={sorter.name}
