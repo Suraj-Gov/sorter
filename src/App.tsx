@@ -18,15 +18,15 @@ const checkIfSortingIsComplete = (sortedArr: Input[], inputArr: Input[]) => {
 const App: React.FC<props> = () => {
   const initialInputArr = useRef<Input[]>([
     // this will be the values of test array
-    { id: 0, val: 4.5 },
-    { id: 1, val: 7 },
-    { id: 2, val: 5 },
-    { id: 3, val: 5.5 },
-    { id: 4, val: 11 },
-    { id: 5, val: 4 },
-    { id: 6, val: 7 },
-    { id: 7, val: 9.5 },
-    { id: 8, val: 5.5 },
+    { id: 0, val: 1.4 },
+    { id: 1, val: 1.8 },
+    { id: 2, val: 1.9 },
+    { id: 3, val: 3.0 },
+    { id: 4, val: 2.3 },
+    { id: 5, val: 4.0 },
+    { id: 6, val: 2.9 },
+    { id: 7, val: 3.7 },
+    { id: 8, val: 1.1 },
   ]);
   const [inputArr, setInputArr] = useState<Input[]>([]);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
@@ -322,7 +322,64 @@ const App: React.FC<props> = () => {
   };
 
   const shellSort = () => {
-    console.log("hello");
+    let { i, j: gap } = init();
+    gap = Math.floor(inputArr.length / 2);
+    let end = -1;
+    let idxs: number[] = [];
+    let idx = -1;
+    const intervalId = setInterval(() => {
+      debugger;
+      setIntervalId(intervalId);
+      if (gap >= 1) {
+        if (i < inputArr.length) {
+          if (end === -1) {
+            end = i + gap;
+          }
+          if (end < inputArr.length) {
+            if (!idxs.length) {
+              let j = (i + gap) % gap;
+              while (j < inputArr.length) {
+                idxs.push(j);
+                j += gap;
+              }
+            }
+            if (idx === -1) {
+              idx = idxs.length - 1;
+            }
+            if (idx > 0) {
+              const b = idxs[idx];
+              const a = idxs[idx - 1];
+              if (b <= end) {
+                setCurrentBar([inputArr[a].id, inputArr[b].id]);
+                setCounter((c) => c + 1);
+                if (inputArr[a].val > inputArr[b].val) {
+                  [inputArr[a], inputArr[b]] = [inputArr[b], inputArr[a]];
+                  setInputArr([...inputArr]);
+                }
+              }
+              idx--;
+            } else {
+              end = -1;
+              i++;
+              idx = -1;
+              idxs = [];
+            }
+          } else {
+            end = -1;
+            i++;
+            idx = -1;
+            idxs = [];
+            gap = Math.floor(gap / 2);
+            i = 0;
+          }
+        } else {
+          i = 0;
+          gap = Math.floor(gap / 2);
+        }
+      } else {
+        finish(intervalId);
+      }
+    }, speedRef.current);
   };
 
   return (

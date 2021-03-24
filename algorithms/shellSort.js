@@ -1,6 +1,4 @@
-const inputArr = Array.from(Array(100)).map((_) =>
-  Math.floor(Math.random() * 100)
-);
+const inputArr = [14, 18, 19, 30, 23, 40, 29, 37, 11];
 const sortedArr = [...inputArr].sort((a, b) => a - b);
 let gap = Math.floor(inputArr.length / 2);
 while (gap >= 1) {
@@ -16,19 +14,17 @@ while (gap >= 1) {
       j += gap;
     }
     // go from the end to the start of array
-    for (let idx = idxs.length; idx > 0; idx--) {
+    for (let idx = idxs.length - 1; idx > 0; idx--) {
       const b = idxs[idx];
       const a = idxs[idx - 1];
       if (b <= end) {
         if (inputArr[a] > inputArr[b]) {
           [inputArr[a], inputArr[b]] = [inputArr[b], inputArr[a]];
         }
-      } else {
-        continue;
       }
     }
   }
   gap = Math.floor(gap / 2);
 }
-
+console.log(inputArr);
 console.log(inputArr.every((i, idx) => i === sortedArr[idx]));
