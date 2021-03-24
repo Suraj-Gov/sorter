@@ -66,17 +66,19 @@ const SortContainer: React.FC<props> = ({
           }
         }
       }
+      debugger;
 
       const newMovingBars = offsets
         .map((i, idx) => ({ i, idx }))
-        .filter((i, idx) => i.i !== xPositions[idx])
+        .filter((i, idx) => i.i !== xPositions[idx] && i.i !== 0)
+        // remove the bars where the value of offset is 0 and has the same previous offset values
         .map((i) => i.idx);
 
       setXPositions(offsets);
       setMovingBars(newMovingBars);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputArr, xPositions.length, initialInputArr.length]);
+  }, [inputArr]);
 
   return (
     <Container>

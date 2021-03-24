@@ -34,10 +34,12 @@ const App: React.FC<props> = () => {
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
   const [currentBar, setCurrentBar] = useState([-1]);
   const sortedArr = useRef<Input[]>([]);
-  const speedRef = useRef(5000);
+  const speedRef = useRef(300);
   const sortDelayCounter = useRef(0);
+
   useEffect(() => {
-    reset();
+    /// 1st fn that runs on mount, just resets the values and sets the initialInputArr and inputArr
+    // reset();
     const init = [...initialInputArr.current];
     setInputArr(init);
     // if I add reset to the dep array, it calls it on every render
@@ -235,6 +237,7 @@ const App: React.FC<props> = () => {
     };
     const mergeSort = (inputArr: Input[], l: number, h: number) => {
       if (l < h) {
+        setCounter((c) => c + 1);
         const mid = Math.floor((l + h) / 2);
         mergeSort(inputArr, l, mid);
         mergeSort(inputArr, mid + 1, h);
