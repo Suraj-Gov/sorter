@@ -56,12 +56,8 @@ const App: React.FC<props> = () => {
     );
   }, [isSortingFinished]);
 
-  // change playPause button status when isCurrentlySorting changes
-
   const reset = () => {
     isCurrentlySorting.current = false;
-    if (playPauseButton.current !== null)
-      playPauseButton.current.innerHTML = "Play";
     setCurrentBar([-1]);
     initialInputArr.current = [
       ...Array.from(Array(30)).map((_, idx) => ({
@@ -79,6 +75,7 @@ const App: React.FC<props> = () => {
   };
 
   const init = () => {
+    isCurrentlySorting.current = true;
     sortDelayCounter.current = 0;
     setIsSortingFinished(false);
     setCounter(0);
@@ -86,6 +83,7 @@ const App: React.FC<props> = () => {
   };
 
   const finish = (intervalId?: NodeJS.Timeout) => {
+    isCurrentlySorting.current = false;
     setIsSortingFinished(true);
     if (intervalId) clearInterval(intervalId);
     setCurrentBar([-1]);
@@ -412,10 +410,13 @@ const App: React.FC<props> = () => {
   };
 
   const handleSorting = () => {
-    if (!isCurrentlySorting.current) {
-      isCurrentlySorting.current = true;
-      if (playPauseButton.current !== null)
-        playPauseButton.current.textContent = "Pause";
+    isCurrentlySorting.current = !isCurrentlySorting.current;
+    if (playPauseButton.current) {
+      playPauseButton.current.innerHTML = !isCurrentlySorting.current
+        ? "Play"
+        : "Pause";
+    }
+    if (isCurrentlySorting.current) {
       if (counter === 0)
         switch (currentSorter) {
           case "bubbleSort":
@@ -440,10 +441,6 @@ const App: React.FC<props> = () => {
             alert("this shouldn't happen.");
             break;
         }
-    } else {
-      isCurrentlySorting.current = false;
-      if (playPauseButton.current !== null)
-        playPauseButton.current.innerHTML = "Play";
     }
   };
 
