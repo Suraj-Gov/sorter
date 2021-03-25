@@ -1,6 +1,7 @@
 import anime from "animejs";
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useCallback, useContext, useLayoutEffect, useRef } from "react";
 import styled from "styled-components";
+import SpeedContext from "../contexts/SpeedContext";
 
 interface props {
   height: number;
@@ -41,20 +42,33 @@ const Bar: React.FC<props> = ({
   isCurrent,
 }) => {
   const barRef = useRef<HTMLDivElement>(null);
+  const { speedContext } = useContext(SpeedContext);
+
+  const move = useCallback(
+    (xPos: number) => {
+      anime({
+        targets: [barRef.current],
+        translateX: xPos,
+        easing: "easeInOutCirc",
+        duration: speedContext.swapAnimationDuration,
+      });
+    },
+    [speedContext.swapAnimationDuration]
+  );
 
   useLayoutEffect(() => {
     move(xPosProp);
     // setXPos()
-  }, [xPosProp]);
+  }, [xPosProp, move]);
 
-  const move = (xPos: number) => {
-    anime({
-      targets: [barRef.current],
-      translateX: xPos,
-      easing: "easeInOutCirc",
-      duration: 100,
-    });
-  };
+  // const move = (xPos: number) => {
+  //   anime({
+  //     targets: [barRef.current],
+  //     translateX: xPos,
+  //     easing: "easeInOutCirc",
+  //     duration: speedContext.swapAnimationDuration,
+  //   });
+  // };
 
   return (
     <div>
