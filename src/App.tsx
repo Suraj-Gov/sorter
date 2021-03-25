@@ -167,7 +167,7 @@ const App: React.FC<props> = () => {
     sort(getCurrentSpeed());
   }, [inputArr]);
 
-  const insertionSort = () => {
+  const insertionSort = useCallback(() => {
     let { i, j } = init();
     // -9 only when the var needs to be reinitialized
     // in while loops, the vars need to retain their prev values
@@ -175,73 +175,78 @@ const App: React.FC<props> = () => {
     j = -9;
     i = 1;
     let key: Input;
-    const intervalId = setInterval(() => {
-      setIntervalId(intervalId);
-      if (!isCurrentlySorting.current) {
-        return;
-      }
-      setCounter((c) => c + 1);
-      if (i < inputArr.length) {
-        if (j === -9) {
-          key = inputArr[i];
-          j = i - 1;
+    const sort = (ops: number) =>
+      setTimeout(() => {
+        if (!isCurrentlySorting.current) {
+          sort(getCurrentSpeed());
+          return;
         }
-        // the while loop ⬇
-        if (j >= 0 && inputArr[j].val > key.val) {
-          inputArr[j + 1] = inputArr[j];
-          j = j - 1;
-          setCurrentBar([inputArr[j]?.id, inputArr[i]?.id]);
+        setCounter((c) => c + 1);
+        if (i < inputArr.length) {
+          if (j === -9) {
+            key = inputArr[i];
+            j = i - 1;
+          }
+          // the while loop ⬇
+          if (j >= 0 && inputArr[j].val > key.val) {
+            inputArr[j + 1] = inputArr[j];
+            j = j - 1;
+            setCurrentBar([inputArr[j]?.id, inputArr[i]?.id]);
+          } else {
+            // the part after the while loop ⬇
+            inputArr[j + 1] = key;
+            j = -9;
+            setCurrentBar([inputArr[i]?.id]);
+            i++;
+            setInputArr([...inputArr]);
+          }
+          sort(getCurrentSpeed());
         } else {
-          // the part after the while loop ⬇
-          inputArr[j + 1] = key;
-          j = -9;
-          setCurrentBar([inputArr[i]?.id]);
-          i++;
-          setInputArr([...inputArr]);
+          finish();
         }
-      } else {
-        finish(intervalId);
-      }
-    }, operationsInterval.current);
-  };
+      }, ops);
+    sort(getCurrentSpeed());
+  }, [inputArr]);
 
-  const selectionSort = () => {
+  const selectionSort = useCallback(() => {
     let { i, j } = init();
     i = 1;
     j = -9;
     let lowestPos: number;
-    const intervalId = setInterval(() => {
-      debugger;
-      setIntervalId(intervalId);
-      if (!isCurrentlySorting.current) {
-        return;
-      }
-      setCounter((c) => c + 1);
-      if (i < inputArr.length) {
-        if (j === -9) {
-          lowestPos = i - 1;
-          j = i;
+    const sort = (ops: number) =>
+      setTimeout(() => {
+        if (!isCurrentlySorting.current) {
+          sort(getCurrentSpeed());
+          return;
         }
-        setCurrentBar([inputArr[j - 1].id]);
-        if (j < inputArr.length) {
-          if (inputArr[j].val < inputArr[lowestPos].val) {
-            lowestPos = j;
+        setCounter((c) => c + 1);
+        if (i < inputArr.length) {
+          if (j === -9) {
+            lowestPos = i - 1;
+            j = i;
           }
-          j++;
+          setCurrentBar([inputArr[j - 1].id]);
+          if (j < inputArr.length) {
+            if (inputArr[j].val < inputArr[lowestPos].val) {
+              lowestPos = j;
+            }
+            j++;
+          } else {
+            [inputArr[lowestPos], inputArr[i - 1]] = [
+              inputArr[i - 1],
+              inputArr[lowestPos],
+            ];
+            setInputArr([...inputArr]);
+            i++;
+            j = -9;
+          }
+          sort(getCurrentSpeed());
         } else {
-          [inputArr[lowestPos], inputArr[i - 1]] = [
-            inputArr[i - 1],
-            inputArr[lowestPos],
-          ];
-          setInputArr([...inputArr]);
-          i++;
-          j = -9;
+          finish();
         }
-      } else {
-        finish(intervalId);
-      }
-    }, operationsInterval.current);
-  };
+      }, ops);
+    sort(getCurrentSpeed());
+  }, [inputArr]);
 
   const mergeSort = () => {
     init();
@@ -252,8 +257,7 @@ const App: React.FC<props> = () => {
       end: number
     ) => {
       sortDelayCounter.current++;
-      const timeoutId = setTimeout(() => {
-        setIntervalId(timeoutId);
+      setTimeout(() => {
         // TODO check for isSortingCurrently
         setCurrentBar(inputArr.slice(start, end).map((i) => i.id));
         let start2 = mid + 1;
@@ -283,7 +287,7 @@ const App: React.FC<props> = () => {
             }
           }
         }
-      }, operationsInterval.current * sortDelayCounter.current);
+      }, getCurrentSpeed() * sortDelayCounter.current);
     };
     const mergeSort = (inputArr: Input[], l: number, h: number) => {
       if (l < h) {
@@ -515,21 +519,42 @@ const App: React.FC<props> = () => {
         ))}
       </div>
       <div style={{ display: "flex" }}>
-        <button disabled={counter === 0}>Step back</button>
+        <button
+          disabled={
+            counter === 0 || (currentSorter === "mergeSort" && counter > 0)
+          }
+        >
+          Step back
+        </button>
         <button
           ref={playPauseButton}
-          disabled={currentSorter === ""}
+          disabled={
+            currentSorter === "" ||
+            (currentSorter === "mergeSort" && counter > 0)
+          }
           onClick={() => handleSorting()}
         >
           Play
         </button>
-        <button disabled={counter === 0}>Step Forward</button>
+        <button
+          disabled={
+            counter === 0 || (currentSorter === "mergeSort" && counter > 0)
+          }
+        >
+          Step Forward
+        </button>
         <input
           type="range"
           min="1"
           max="20"
           value={sliderVal}
-          onChange={(e) => setSliderVal(parseInt(e.target.value))}
+          onChange={(e) =>
+            setSliderVal(
+              !(currentSorter === "mergeSort" && counter > 0)
+                ? parseInt(e.target.value)
+                : sliderVal
+            )
+          }
         />
       </div>
     </div>
