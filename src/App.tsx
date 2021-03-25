@@ -82,6 +82,7 @@ const App: React.FC<props> = () => {
   }, [sliderVal, setSpeedContext]);
 
   const reset = () => {
+    setCurrentSorter("");
     isCurrentlySorting.current = false;
     setCurrentBar([-1]);
     initialInputArr.current = [
@@ -125,8 +126,8 @@ const App: React.FC<props> = () => {
     setCurrentBar([inputArr[j].id, inputArr[j + 1].id]);
     const sort = (ops: number) =>
       setTimeout(() => {
-        console.log(getCurrentSpeed());
         if (!isCurrentlySorting.current) {
+          sort(getCurrentSpeed());
           return;
         }
         // the main looping
@@ -500,7 +501,7 @@ const App: React.FC<props> = () => {
         ].map((sorter) => (
           <button
             key={sorter.name}
-            disabled={isCurrentlySorting.current}
+            disabled={currentSorter !== ""}
             onClick={sorter.fn}
           >
             <p
