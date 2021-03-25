@@ -1,6 +1,13 @@
 // this is a really big App.tsx
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import SortContainer from "./components/SortContainer";
+import SpeedContext from "./contexts/SpeedContext";
 
 interface props {}
 
@@ -35,10 +42,12 @@ const App: React.FC<props> = () => {
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
   const [currentBar, setCurrentBar] = useState([-1]);
   const [currentSorter, setCurrentSorter] = useState("");
+  const [sliderVal, setSliderVal] = useState(5);
   const sortedArr = useRef<Input[]>([]);
-  const speedRef = useRef(300);
+  const [operationsInterval, setOperationsInterval] = useState(500);
   const sortDelayCounter = useRef(0);
   const playPauseButton = useRef<HTMLButtonElement>(null);
+  const { setSpeedContext } = useContext(SpeedContext);
 
   useEffect(() => {
     /// 1st fn that runs on mount, just resets the values and sets the initialInputArr and inputArr
@@ -55,6 +64,22 @@ const App: React.FC<props> = () => {
       (a, b) => a.val - b.val
     );
   }, [isSortingFinished]);
+
+  // updating operation intervals and animationspeeds here
+  useEffect(() => {
+    const newOpsInterval = 100 * sliderVal;
+    setOperationsInterval(newOpsInterval);
+    setSpeedContext((prev) => ({
+      ...prev,
+      operationsInterval: newOpsInterval,
+    }));
+    if (newOpsInterval < 350) {
+      setSpeedContext((prev) => ({
+        ...prev,
+        swapAnimationDuration: newOpsInterval * 0.75,
+      }));
+    }
+  }, [sliderVal, setSpeedContext]);
 
   const reset = () => {
     isCurrentlySorting.current = false;
@@ -89,18 +114,17 @@ const App: React.FC<props> = () => {
     setCurrentBar([-1]);
   };
 
-  const bubbleSort = () => {
+  const bubbleSort = useCallback(() => {
     // instead of using loops like for loop, I'm using setInterval
     // initializing vars
     let { i, j } = init();
     setCurrentBar([inputArr[j].id, inputArr[j + 1].id]);
     const intervalId = setInterval(() => {
+      console.log(operationsInterval);
       setIntervalId(intervalId);
       if (!isCurrentlySorting.current) {
-        console.log("not sorting");
         return;
       }
-      console.log("sorting");
       // the main looping
       if (i < inputArr.length - 1) {
         // the value checker part of the first for loop ☝
@@ -133,8 +157,8 @@ const App: React.FC<props> = () => {
         finish(intervalId);
       }
       // TODO: allow for dynamic speed
-    }, speedRef.current);
-  };
+    }, operationsInterval);
+  }, [inputArr, operationsInterval]);
 
   const insertionSort = () => {
     let { i, j } = init();
@@ -171,7 +195,7 @@ const App: React.FC<props> = () => {
       } else {
         finish(intervalId);
       }
-    }, speedRef.current);
+    }, operationsInterval);
   };
 
   const selectionSort = () => {
@@ -209,7 +233,7 @@ const App: React.FC<props> = () => {
       } else {
         finish(intervalId);
       }
-    }, speedRef.current);
+    }, operationsInterval);
   };
 
   const mergeSort = () => {
@@ -252,7 +276,7 @@ const App: React.FC<props> = () => {
             }
           }
         }
-      }, speedRef.current * sortDelayCounter.current);
+      }, operationsInterval * sortDelayCounter.current);
     };
     const mergeSort = (inputArr: Input[], l: number, h: number) => {
       if (l < h) {
@@ -338,7 +362,7 @@ const App: React.FC<props> = () => {
             i = -1;
           }
         }
-      }, speedRef.current);
+      }, operationsInterval);
     };
 
     quickSort(inputArr, 0, inputArr.length - 1);
@@ -406,7 +430,7 @@ const App: React.FC<props> = () => {
       } else {
         finish(intervalId);
       }
-    }, speedRef.current);
+    }, operationsInterval);
   };
 
   const handleSorting = () => {
@@ -486,7 +510,7 @@ const App: React.FC<props> = () => {
         ))}
       </div>
       <div style={{ display: "flex" }}>
-        <button>Step back</button>
+        <button disabled={counter === 0}>Step back</button>
         <button
           ref={playPauseButton}
           disabled={currentSorter === ""}
@@ -494,12 +518,13 @@ const App: React.FC<props> = () => {
         >
           Play
         </button>
-        <button>Step Forward</button>
+        <button disabled={counter === 0}>Step Forward</button>
         <input
           type="range"
           min="1"
           max="20"
-          onChange={(e) => console.log(e.target.value)}
+          value={sliderVal}
+          onChange={(e) => setSliderVal(parseInt(e.target.value))}
         />
       </div>
     </div>
