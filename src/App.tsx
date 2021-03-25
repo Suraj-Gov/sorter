@@ -29,13 +29,16 @@ const App: React.FC<props> = () => {
     { id: 8, val: 1.1 },
   ]);
   const [inputArr, setInputArr] = useState<Input[]>([]);
+  const isCurrentlySorting = useRef(false);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
   const [counter, setCounter] = useState(0);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
   const [currentBar, setCurrentBar] = useState([-1]);
+  const [currentSorter, setCurrentSorter] = useState("");
   const sortedArr = useRef<Input[]>([]);
   const speedRef = useRef(300);
   const sortDelayCounter = useRef(0);
+  const playPauseButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     /// 1st fn that runs on mount, just resets the values and sets the initialInputArr and inputArr
@@ -46,13 +49,19 @@ const App: React.FC<props> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // idk why I added this
   useEffect(() => {
     sortedArr.current = [...initialInputArr.current].sort(
       (a, b) => a.val - b.val
     );
   }, [isSortingFinished]);
 
+  // change playPause button status when isCurrentlySorting changes
+
   const reset = () => {
+    isCurrentlySorting.current = false;
+    if (playPauseButton.current !== null)
+      playPauseButton.current.innerHTML = "Play";
     setCurrentBar([-1]);
     initialInputArr.current = [
       ...Array.from(Array(30)).map((_, idx) => ({
@@ -89,6 +98,11 @@ const App: React.FC<props> = () => {
     setCurrentBar([inputArr[j].id, inputArr[j + 1].id]);
     const intervalId = setInterval(() => {
       setIntervalId(intervalId);
+      if (!isCurrentlySorting.current) {
+        console.log("not sorting");
+        return;
+      }
+      console.log("sorting");
       // the main looping
       if (i < inputArr.length - 1) {
         // the value checker part of the first for loop ☝
@@ -134,6 +148,9 @@ const App: React.FC<props> = () => {
     let key: Input;
     const intervalId = setInterval(() => {
       setIntervalId(intervalId);
+      if (!isCurrentlySorting.current) {
+        return;
+      }
       setCounter((c) => c + 1);
       if (i < inputArr.length) {
         if (j === -9) {
@@ -167,6 +184,9 @@ const App: React.FC<props> = () => {
     const intervalId = setInterval(() => {
       debugger;
       setIntervalId(intervalId);
+      if (!isCurrentlySorting.current) {
+        return;
+      }
       setCounter((c) => c + 1);
       if (i < inputArr.length) {
         if (j === -9) {
@@ -205,6 +225,7 @@ const App: React.FC<props> = () => {
       sortDelayCounter.current++;
       const timeoutId = setTimeout(() => {
         setIntervalId(timeoutId);
+        // TODO check for isSortingCurrently
         setCurrentBar(inputArr.slice(start, end).map((i) => i.id));
         let start2 = mid + 1;
         if (inputArr[mid].val <= inputArr[start2].val) {
@@ -263,12 +284,16 @@ const App: React.FC<props> = () => {
       stack[++top] = end;
       const intervalId = setInterval(() => {
         // debugger;
-        setCounter((c) => c + 1);
         setIntervalId(intervalId);
         if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
           console.log("finished");
           finish(intervalId);
         }
+
+        if (!isCurrentlySorting.current) {
+          return;
+        }
+        setCounter((c) => c + 1);
         if (top >= 0 || isPartitioning) {
           if (!isPartitioning) {
             end = stack[top--];
@@ -328,8 +353,10 @@ const App: React.FC<props> = () => {
     let idxs: number[] = [];
     let idx = -1;
     const intervalId = setInterval(() => {
-      debugger;
       setIntervalId(intervalId);
+      if (!isCurrentlySorting.current) {
+        return;
+      }
       if (gap >= 1) {
         if (i < inputArr.length) {
           if (end === -1) {
@@ -359,12 +386,14 @@ const App: React.FC<props> = () => {
               }
               idx--;
             } else {
+              setCurrentBar([]);
               end = -1;
               i++;
               idx = -1;
               idxs = [];
             }
           } else {
+            setCurrentBar([]);
             end = -1;
             i++;
             idx = -1;
@@ -382,6 +411,42 @@ const App: React.FC<props> = () => {
     }, speedRef.current);
   };
 
+  const handleSorting = () => {
+    if (!isCurrentlySorting.current) {
+      isCurrentlySorting.current = true;
+      if (playPauseButton.current !== null)
+        playPauseButton.current.textContent = "Pause";
+      if (counter === 0)
+        switch (currentSorter) {
+          case "bubbleSort":
+            bubbleSort();
+            break;
+          case "selectionSort":
+            selectionSort();
+            break;
+          case "insertionSort":
+            insertionSort();
+            break;
+          case "mergeSort":
+            mergeSort();
+            break;
+          case "quickSort":
+            quickSort();
+            break;
+          case "shellSort":
+            shellSort();
+            break;
+          default:
+            alert("this shouldn't happen.");
+            break;
+        }
+    } else {
+      isCurrentlySorting.current = false;
+      if (playPauseButton.current !== null)
+        playPauseButton.current.innerHTML = "Play";
+    }
+  };
+
   return (
     <div>
       <SortContainer
@@ -395,21 +460,50 @@ const App: React.FC<props> = () => {
       <button onClick={reset}>reset</button>
       <div style={{ display: "flex" }}>
         {[
-          { name: "bubbleSort", fn: bubbleSort },
-          { name: "selectionSort", fn: selectionSort },
-          { name: "insertionSort", fn: insertionSort },
-          { name: "mergeSort", fn: mergeSort },
-          { name: "quickSort", fn: quickSort },
-          { name: "shellSort", fn: shellSort },
+          { name: "bubbleSort", fn: () => setCurrentSorter("bubbleSort") },
+          {
+            name: "selectionSort",
+            fn: () => setCurrentSorter("selectionSort"),
+          },
+          {
+            name: "insertionSort",
+            fn: () => setCurrentSorter("insertionSort"),
+          },
+          { name: "mergeSort", fn: () => setCurrentSorter("mergeSort") },
+          { name: "quickSort", fn: () => setCurrentSorter("quickSort") },
+          { name: "shellSort", fn: () => setCurrentSorter("shellSort") },
         ].map((sorter) => (
           <button
             key={sorter.name}
-            disabled={(!isSortingFinished && counter > 0) || isSortingFinished}
+            disabled={isCurrentlySorting.current}
             onClick={sorter.fn}
           >
-            {sorter.name}
+            <p
+              style={{
+                fontWeight: sorter.name === currentSorter ? "bold" : "normal",
+              }}
+            >
+              {sorter.name}
+            </p>
           </button>
         ))}
+      </div>
+      <div style={{ display: "flex" }}>
+        <button>Step back</button>
+        <button
+          ref={playPauseButton}
+          disabled={currentSorter === ""}
+          onClick={() => handleSorting()}
+        >
+          Play
+        </button>
+        <button>Step Forward</button>
+        <input
+          type="range"
+          min="1"
+          max="20"
+          onChange={(e) => console.log(e.target.value)}
+        />
       </div>
     </div>
   );

@@ -66,7 +66,6 @@ const SortContainer: React.FC<props> = ({
           }
         }
       }
-      debugger;
 
       const newMovingBars = offsets
         .map((i, idx) => ({ i, idx }))
