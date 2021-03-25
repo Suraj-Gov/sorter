@@ -51,7 +51,7 @@ const App: React.FC<props> = () => {
 
   useEffect(() => {
     /// 1st fn that runs on mount, just resets the values and sets the initialInputArr and inputArr
-    // reset();
+    reset();
     const init = [...initialInputArr.current];
     setInputArr(init);
     // if I add reset to the dep array, it calls it on every render
@@ -258,7 +258,7 @@ const App: React.FC<props> = () => {
     ) => {
       sortDelayCounter.current++;
       setTimeout(() => {
-        // TODO check for isSortingCurrently
+        // cannot pause, or alter speed in merge sort, I just don't know how to do merge sort iteratively
         setCurrentBar(inputArr.slice(start, end).map((i) => i.id));
         let start2 = mid + 1;
         if (inputArr[mid].val <= inputArr[start2].val) {
@@ -281,11 +281,10 @@ const App: React.FC<props> = () => {
             mid++;
             setInputArr([...inputArr]);
             setCounter((c) => c + 1);
-
-            if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
-              finish();
-            }
           }
+        }
+        if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
+          finish();
         }
       }, getCurrentSpeed() * sortDelayCounter.current);
     };
@@ -444,10 +443,12 @@ const App: React.FC<props> = () => {
 
   const handleSorting = () => {
     isCurrentlySorting.current = !isCurrentlySorting.current;
-    if (playPauseButton.current) {
-      playPauseButton.current.innerHTML = !isCurrentlySorting.current
-        ? "Play"
-        : "Pause";
+    if (currentSorter !== "mergeSort") {
+      if (playPauseButton.current) {
+        playPauseButton.current.innerHTML = !isCurrentlySorting.current
+          ? "Play"
+          : "Pause";
+      }
     }
     if (isCurrentlySorting.current) {
       if (counter === 0)
@@ -487,7 +488,14 @@ const App: React.FC<props> = () => {
         currentBar={currentBar}
       />
       <p>Steps executed: {counter}</p>
-      <button onClick={reset}>reset</button>
+      <button
+        disabled={
+          currentSorter === "mergeSort" && !isSortingFinished && counter > 0
+        }
+        onClick={reset}
+      >
+        reset
+      </button>
       <div style={{ display: "flex" }}>
         {[
           { name: "bubbleSort", fn: () => setCurrentSorter("bubbleSort") },
