@@ -44,7 +44,7 @@ const App: React.FC<props> = () => {
   const [currentSorter, setCurrentSorter] = useState("");
   const [sliderVal, setSliderVal] = useState(5);
   const sortedArr = useRef<Input[]>([]);
-  const [operationsInterval, setOperationsInterval] = useState(500);
+  const operationsInterval = useRef(500);
   const sortDelayCounter = useRef(0);
   const playPauseButton = useRef<HTMLButtonElement>(null);
   const { setSpeedContext } = useContext(SpeedContext);
@@ -68,7 +68,7 @@ const App: React.FC<props> = () => {
   // updating operation intervals and animationspeeds here
   useEffect(() => {
     const newOpsInterval = 100 * sliderVal;
-    setOperationsInterval(newOpsInterval);
+    operationsInterval.current = newOpsInterval;
     setSpeedContext((prev) => ({
       ...prev,
       operationsInterval: newOpsInterval,
@@ -115,7 +115,7 @@ const App: React.FC<props> = () => {
   };
 
   const getCurrentSpeed = () => {
-    return operationsInterval;
+    return operationsInterval.current;
   };
 
   const bubbleSort = useCallback(() => {
@@ -123,46 +123,48 @@ const App: React.FC<props> = () => {
     // initializing vars
     let { i, j } = init();
     setCurrentBar([inputArr[j].id, inputArr[j + 1].id]);
-    const intervalId = setInterval(() => {
-      console.log(getCurrentSpeed());
-      setIntervalId(intervalId);
-      if (!isCurrentlySorting.current) {
-        return;
-      }
-      // the main looping
-      if (i < inputArr.length - 1) {
-        // the value checker part of the first for loop ☝
-        if (j < inputArr.length - i - 1) {
-          // the value checker part of the second for loop ☝
-          setCounter((prev) => prev + 1);
-          // TODO: show iteration count
-          if (inputArr[j].val > inputArr[j + 1].val) {
-            const temp = inputArr[j];
-            inputArr[j] = inputArr[j + 1];
-            inputArr[j + 1] = temp;
-          } else {
-            setCurrentBar([inputArr[j + 1].id, inputArr[j].id]);
-          }
-          // swap if the left element is more than right element
-          setInputArr([...inputArr]);
-          setCurrentBar([inputArr[j + 2]?.id, inputArr[j + 1].id]);
-          // set the array after swapping
-          j++;
-          // setCurrentBar(i + j);
-          // increment second loop variable
-        } else {
-          // if the second loop is finished, reset second loop var, increment first loop var
-          j = 0;
-          i++;
+    const sort = (ops: number) =>
+      setTimeout(() => {
+        console.log(getCurrentSpeed());
+        if (!isCurrentlySorting.current) {
+          return;
         }
-      }
-      // if the first loop is over, stop the intervals
-      else {
-        finish(intervalId);
-      }
-      // TODO: allow for dynamic speed
-    }, getCurrentSpeed());
-  }, [inputArr, operationsInterval]);
+        // the main looping
+        if (i < inputArr.length - 1) {
+          // the value checker part of the first for loop ☝
+          if (j < inputArr.length - i - 1) {
+            // the value checker part of the second for loop ☝
+            setCounter((prev) => prev + 1);
+            // TODO: show iteration count
+            if (inputArr[j].val > inputArr[j + 1].val) {
+              const temp = inputArr[j];
+              inputArr[j] = inputArr[j + 1];
+              inputArr[j + 1] = temp;
+            } else {
+              setCurrentBar([inputArr[j + 1].id, inputArr[j].id]);
+            }
+            // swap if the left element is more than right element
+            setInputArr([...inputArr]);
+            setCurrentBar([inputArr[j + 2]?.id, inputArr[j + 1].id]);
+            // set the array after swapping
+            j++;
+            // setCurrentBar(i + j);
+            // increment second loop variable
+          } else {
+            // if the second loop is finished, reset second loop var, increment first loop var
+            j = 0;
+            i++;
+          }
+          sort(getCurrentSpeed());
+        }
+        // if the first loop is over, stop the intervals
+        else {
+          finish();
+        }
+        // TODO: allow for dynamic speed
+      }, ops);
+    sort(getCurrentSpeed());
+  }, [inputArr]);
 
   const insertionSort = () => {
     let { i, j } = init();
@@ -199,7 +201,7 @@ const App: React.FC<props> = () => {
       } else {
         finish(intervalId);
       }
-    }, operationsInterval);
+    }, operationsInterval.current);
   };
 
   const selectionSort = () => {
@@ -237,7 +239,7 @@ const App: React.FC<props> = () => {
       } else {
         finish(intervalId);
       }
-    }, operationsInterval);
+    }, operationsInterval.current);
   };
 
   const mergeSort = () => {
@@ -280,7 +282,7 @@ const App: React.FC<props> = () => {
             }
           }
         }
-      }, operationsInterval * sortDelayCounter.current);
+      }, operationsInterval.current * sortDelayCounter.current);
     };
     const mergeSort = (inputArr: Input[], l: number, h: number) => {
       if (l < h) {
@@ -309,10 +311,8 @@ const App: React.FC<props> = () => {
       stack[++top] = start;
       stack[++top] = end;
       const intervalId = setInterval(() => {
-        // debugger;
         setIntervalId(intervalId);
         if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
-          console.log("finished");
           finish(intervalId);
         }
 
@@ -366,7 +366,7 @@ const App: React.FC<props> = () => {
             i = -1;
           }
         }
-      }, operationsInterval);
+      }, operationsInterval.current);
     };
 
     quickSort(inputArr, 0, inputArr.length - 1);
@@ -434,7 +434,7 @@ const App: React.FC<props> = () => {
       } else {
         finish(intervalId);
       }
-    }, operationsInterval);
+    }, operationsInterval.current);
   };
 
   const handleSorting = () => {
