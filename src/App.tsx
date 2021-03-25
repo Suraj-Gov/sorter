@@ -98,6 +98,7 @@ const App: React.FC<props> = () => {
     setInputArr([...initialInputArr.current]);
     setCounter(0);
     setIsSortingFinished(false);
+    handleSorting("no toggle");
   };
 
   const init = () => {
@@ -301,7 +302,7 @@ const App: React.FC<props> = () => {
     mergeSort(inputArr, 0, initialInputArr.current.length - 1);
   };
 
-  const quickSort = () => {
+  const quickSort = useCallback(() => {
     // https://www.geeksforgeeks.org/iterative-quick-sort/
     // here the quick sort function is being run iteratively instead of recursively,
     // the stack holds the values instead of the function call stack if in recursion
@@ -314,67 +315,71 @@ const App: React.FC<props> = () => {
       comparisonIdx = -1;
       stack[++top] = start;
       stack[++top] = end;
-      const intervalId = setInterval(() => {
-        setIntervalId(intervalId);
-        if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
-          finish(intervalId);
-        }
+      const sort = (ops: number) =>
+        setTimeout(() => {
+          if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
+            finish();
+            return;
+          }
 
-        if (!isCurrentlySorting.current) {
-          return;
-        }
-        setCounter((c) => c + 1);
-        if (top >= 0 || isPartitioning) {
-          if (!isPartitioning) {
-            end = stack[top--];
-            start = stack[top--];
+          if (!isCurrentlySorting.current) {
+            sort(getCurrentSpeed());
+            return;
           }
-          // partitioning
-          // suppposed to return comparisonIdx
-          isPartitioning = true;
-          const pivot = inputArr[end];
-          if (comparisonIdx === -1) {
-            comparisonIdx = start;
-            i = start;
-          }
-          if (i < end) {
-            setCurrentBar([inputArr[i].id, pivot.id]);
-            if (inputArr[i].val <= pivot.val) {
-              [inputArr[i], inputArr[comparisonIdx]] = [
+          setCounter((c) => c + 1);
+          if (top >= 0 || isPartitioning) {
+            if (!isPartitioning) {
+              end = stack[top--];
+              start = stack[top--];
+            }
+            // partitioning
+            // suppposed to return comparisonIdx
+            isPartitioning = true;
+            const pivot = inputArr[end];
+            if (comparisonIdx === -1) {
+              comparisonIdx = start;
+              i = start;
+            }
+            if (i < end) {
+              setCurrentBar([inputArr[i].id, pivot.id]);
+              if (inputArr[i].val <= pivot.val) {
+                [inputArr[i], inputArr[comparisonIdx]] = [
+                  inputArr[comparisonIdx],
+                  inputArr[i],
+                ];
+                setInputArr([...inputArr]);
+                comparisonIdx++;
+              }
+              i++;
+            } else {
+              [inputArr[comparisonIdx], inputArr[end]] = [
+                inputArr[end],
                 inputArr[comparisonIdx],
-                inputArr[i],
               ];
               setInputArr([...inputArr]);
-              comparisonIdx++;
+              if (comparisonIdx - 1 > start) {
+                stack[++top] = start;
+                stack[++top] = comparisonIdx - 1;
+              }
+              if (comparisonIdx + 1 < end) {
+                stack[++top] = comparisonIdx + 1;
+                stack[++top] = end;
+              }
+              // I could use pop, but that's giving me a weird TS error
+              // it says that I cannot assign a (number | undefined) type to number
+              // that could be because a pop might return undefined when the array is empty
+              isPartitioning = false;
+              comparisonIdx = -1;
+              i = -1;
             }
-            i++;
-          } else {
-            [inputArr[comparisonIdx], inputArr[end]] = [
-              inputArr[end],
-              inputArr[comparisonIdx],
-            ];
-            setInputArr([...inputArr]);
-            if (comparisonIdx - 1 > start) {
-              stack[++top] = start;
-              stack[++top] = comparisonIdx - 1;
-            }
-            if (comparisonIdx + 1 < end) {
-              stack[++top] = comparisonIdx + 1;
-              stack[++top] = end;
-            }
-            // I could use pop, but that's giving me a weird TS error
-            // it says that I cannot assign a (number | undefined) type to number
-            // that could be because a pop might return undefined when the array is empty
-            isPartitioning = false;
-            comparisonIdx = -1;
-            i = -1;
           }
-        }
-      }, operationsInterval.current);
+          sort(getCurrentSpeed());
+        }, ops);
+      sort(getCurrentSpeed());
     };
 
     quickSort(inputArr, 0, inputArr.length - 1);
-  };
+  }, [inputArr]);
 
   const shellSort = () => {
     let { i, j: gap } = init();
@@ -382,67 +387,71 @@ const App: React.FC<props> = () => {
     let end = -1;
     let idxs: number[] = [];
     let idx = -1;
-    const intervalId = setInterval(() => {
-      setIntervalId(intervalId);
-      if (!isCurrentlySorting.current) {
-        return;
-      }
-      if (gap >= 1) {
-        if (i < inputArr.length) {
-          if (end === -1) {
-            end = i + gap;
-          }
-          if (end < inputArr.length) {
-            if (!idxs.length) {
-              let j = (i + gap) % gap;
-              while (j < inputArr.length) {
-                idxs.push(j);
-                j += gap;
-              }
+    const sort = (ops: number) =>
+      setTimeout(() => {
+        if (!isCurrentlySorting.current) {
+          sort(getCurrentSpeed());
+          return;
+        }
+        if (gap >= 1) {
+          if (i < inputArr.length) {
+            if (end === -1) {
+              end = i + gap;
             }
-            if (idx === -1) {
-              idx = idxs.length - 1;
-            }
-            if (idx > 0) {
-              const b = idxs[idx];
-              const a = idxs[idx - 1];
-              if (b <= end) {
-                setCurrentBar([inputArr[a].id, inputArr[b].id]);
-                setCounter((c) => c + 1);
-                if (inputArr[a].val > inputArr[b].val) {
-                  [inputArr[a], inputArr[b]] = [inputArr[b], inputArr[a]];
-                  setInputArr([...inputArr]);
+            if (end < inputArr.length) {
+              if (!idxs.length) {
+                let j = (i + gap) % gap;
+                while (j < inputArr.length) {
+                  idxs.push(j);
+                  j += gap;
                 }
               }
-              idx--;
+              if (idx === -1) {
+                idx = idxs.length - 1;
+              }
+              if (idx > 0) {
+                const b = idxs[idx];
+                const a = idxs[idx - 1];
+                if (b <= end) {
+                  setCurrentBar([inputArr[a].id, inputArr[b].id]);
+                  setCounter((c) => c + 1);
+                  if (inputArr[a].val > inputArr[b].val) {
+                    [inputArr[a], inputArr[b]] = [inputArr[b], inputArr[a]];
+                    setInputArr([...inputArr]);
+                  }
+                }
+                idx--;
+              } else {
+                setCurrentBar([]);
+                end = -1;
+                i++;
+                idx = -1;
+                idxs = [];
+              }
             } else {
               setCurrentBar([]);
               end = -1;
               i++;
               idx = -1;
               idxs = [];
+              gap = Math.floor(gap / 2);
+              i = 0;
             }
           } else {
-            setCurrentBar([]);
-            end = -1;
-            i++;
-            idx = -1;
-            idxs = [];
-            gap = Math.floor(gap / 2);
             i = 0;
+            gap = Math.floor(gap / 2);
           }
+          sort(getCurrentSpeed());
         } else {
-          i = 0;
-          gap = Math.floor(gap / 2);
+          finish();
         }
-      } else {
-        finish(intervalId);
-      }
-    }, operationsInterval.current);
+      }, ops);
+    sort(getCurrentSpeed());
   };
 
-  const handleSorting = () => {
-    isCurrentlySorting.current = !isCurrentlySorting.current;
+  const handleSorting = (option: "toggle" | "no toggle") => {
+    if (option === "toggle")
+      isCurrentlySorting.current = !isCurrentlySorting.current;
     if (currentSorter !== "mergeSort") {
       if (playPauseButton.current) {
         playPauseButton.current.innerHTML = !isCurrentlySorting.current
@@ -470,6 +479,8 @@ const App: React.FC<props> = () => {
             break;
           case "shellSort":
             shellSort();
+            break;
+          case "":
             break;
           default:
             alert("this shouldn't happen.");
@@ -540,7 +551,7 @@ const App: React.FC<props> = () => {
             currentSorter === "" ||
             (currentSorter === "mergeSort" && counter > 0)
           }
-          onClick={() => handleSorting()}
+          onClick={() => handleSorting("toggle")}
         >
           Play
         </button>
