@@ -9,10 +9,23 @@ import React, {
 import SortContainer from "./components/SortContainer";
 import SpeedContext from "./contexts/SpeedContext";
 import styled from "styled-components";
+import Controls from "./components/Controls";
+import SortOptions from "./components/SortOptions";
+import playIcon from "./icons/play";
 
 const Main = styled.div`
   display: grid;
   grid-template-columns: 35vw auto;
+  @media only screen and (max-width: 900px) {
+    display: flex;
+    flex-direction: column-reverse;
+    & > *:nth-child(1) {
+      height: 45vh;
+    }
+    & > *:nth-child(2) {
+      height: 55vh;
+    }
+  }
 `;
 
 interface props {}
@@ -21,12 +34,6 @@ export interface Input {
   id: number;
   val: number;
 }
-
-const checkIfSortingIsComplete = (sortedArr: Input[], inputArr: Input[]) => {
-  return sortedArr
-    .map((i) => i.val)
-    .every((currentVal, idx) => currentVal === inputArr[idx].val);
-};
 
 const App: React.FC<props> = () => {
   const initialInputArr = useRef<Input[]>([]);
@@ -143,7 +150,7 @@ const App: React.FC<props> = () => {
   let handleSorting: (option: "toggle" | "no toggle") => void;
 
   const reset = () => {
-    setCurrentSorter("");
+    // setCurrentSorter("");
     isCurrentlySorting.current = false;
     setCurrentBar([-1]);
     let initialArr = [
@@ -160,7 +167,7 @@ const App: React.FC<props> = () => {
     setInputArr([...initialInputArr.current]);
     setCounter(0);
     setIsSortingFinished(false);
-    handleSorting("no toggle");
+    // handleSorting("no toggle");
   };
 
   const init = useCallback(() => {
@@ -572,8 +579,17 @@ const App: React.FC<props> = () => {
         stepForwardRef.current
       ) {
         playPauseButton.current.innerHTML = !isCurrentlySorting.current
-          ? "Play"
-          : "Pause";
+          ? // prettier-ignore
+            `<svg viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 37.3713V2.43737C0 0.903735 1.65505 -0.0592372 2.98833 0.698632L32.1 17.2463C33.4131 17.9927 33.4567 19.8695 32.1796 20.676L3.06799 39.0623C1.73625 39.9034 0 38.9465 0 37.3713Z" fill="#7F7F7F"/>
+</svg>`
+          : // prettier-ignore
+            `<svg viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 5C0 2.23858 2.23858 0 5 0H9C11.7614 0 14 2.23858 14 5V35C14 37.7614 11.7614 40 9 40H5C2.23858 40 0 37.7614 0 35V5Z" fill="#7F7F7F"/>
+<path d="M20 5C20 2.23858 22.2386 0 25 0H29C31.7614 0 34 2.23858 34 5V35C34 37.7614 31.7614 40 29 40H25C22.2386 40 20 37.7614 20 35V5Z" fill="#7F7F7F"/>
+</svg>
+
+`;
         stepBackRef.current.disabled = isCurrentlySorting.current;
         stepForwardRef.current.disabled = isCurrentlySorting.current;
       }
@@ -611,102 +627,31 @@ const App: React.FC<props> = () => {
   return (
     <Main>
       <div>
-        <p>Steps executed: {counter}</p>
-        <button
-          disabled={
-            currentSorter === "mergeSort" || (!isSortingFinished && counter > 0)
-          }
-          onClick={reset}
-        >
-          reset
-        </button>
-        <div style={{ display: "flex" }}>
-          {[
-            { name: "bubbleSort", fn: () => setCurrentSorter("bubbleSort") },
-            {
-              name: "selectionSort",
-              fn: () => setCurrentSorter("selectionSort"),
-            },
-            {
-              name: "insertionSort",
-              fn: () => setCurrentSorter("insertionSort"),
-            },
-            { name: "mergeSort", fn: () => setCurrentSorter("mergeSort") },
-            { name: "quickSort", fn: () => setCurrentSorter("quickSort") },
-            { name: "shellSort", fn: () => setCurrentSorter("shellSort") },
-          ].map((sorter) => (
-            <button
-              key={sorter.name}
-              disabled={currentSorter !== ""}
-              onClick={sorter.fn}
-            >
-              <p
-                style={{
-                  fontWeight: sorter.name === currentSorter ? "bold" : "normal",
-                }}
-              >
-                {sorter.name}
-              </p>
-            </button>
-          ))}
-        </div>
-        <div id="controls" style={{ display: "flex" }}>
-          <button
-            id="stepBack"
-            ref={stepBackRef}
-            disabled={
-              (currentSorter === "mergeSort" && counter > 0) ||
-              // inputArrs[inputArr.length - offset] === undefined ||
-              isSortingFinished
-            }
-          >
-            Step back
-          </button>
-          <button
-            ref={playPauseButton}
-            disabled={
-              currentSorter === "" ||
-              (currentSorter === "mergeSort" && counter > 0)
-            }
-            onClick={() => handleSorting("toggle")}
-          >
-            Play
-          </button>
-          <button
-            id="stepForward"
-            ref={stepForwardRef}
-            disabled={
-              (currentSorter === "mergeSort" && counter > 0) ||
-              offset === 0 ||
-              isSortingFinished
-            }
-          >
-            Step Forward
-          </button>
-          <input
-            type="range"
-            min="1"
-            max="20"
-            value={sliderVal}
-            onChange={(e) =>
-              setSliderVal(
-                !(currentSorter === "mergeSort" && counter > 0)
-                  ? parseInt(e.target.value)
-                  : sliderVal
-              )
-            }
-          />
-          <input
-            type="range"
-            min="10"
-            max="150"
-            value={barCount}
-            onChange={(e) =>
-              !isCurrentlySorting.current &&
-              setBarCount(parseInt(e.target.value))
-            }
-          />
-        </div>
+        <SortOptions
+          barCount={barCount}
+          isCurrentlySorting={isCurrentlySorting}
+          setBarCount={setBarCount}
+          counter={counter}
+          currentSorter={currentSorter}
+          isSortingFinished={isSortingFinished}
+          reset={reset}
+          setCurrentSorter={setCurrentSorter}
+        />
+        <Controls
+          barCount={barCount}
+          isCurrentlySorting={isCurrentlySorting}
+          setBarCount={setBarCount}
+          counter={counter}
+          currentSorter={currentSorter}
+          handleSorting={handleSorting}
+          isSortingFinished={isSortingFinished}
+          offset={offset}
+          playPauseButton={playPauseButton}
+          setSliderVal={setSliderVal}
+          sliderVal={sliderVal}
+          stepBackRef={stepBackRef}
+          stepForwardRef={stepForwardRef}
+        />
       </div>
       <SortContainer
         barCount={barCount}

@@ -11,7 +11,6 @@ const Container = styled.div`
   position: relative;
   height: 100vh;
   overflow: hidden;
-  padding: 0em;
 `;
 
 interface props {
@@ -45,7 +44,7 @@ const SortContainer: React.FC<props> = ({
     if (container)
       setSortContainerDimensions({
         height: container.getBoundingClientRect().height,
-        width: container.getBoundingClientRect().width - 12 * 5 * 2,
+        width: container.getBoundingClientRect().width - 12 * 2 * 2,
       });
   };
   useEffect(() => {
