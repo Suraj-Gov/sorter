@@ -8,6 +8,12 @@ import React, {
 } from "react";
 import SortContainer from "./components/SortContainer";
 import SpeedContext from "./contexts/SpeedContext";
+import styled from "styled-components";
+
+const Main = styled.div`
+  display: grid;
+  grid-template-columns: 35vw auto;
+`;
 
 interface props {}
 
@@ -45,7 +51,6 @@ const App: React.FC<props> = () => {
   const [barCount, setBarCount] = useState(30);
 
   useEffect(() => {
-    // debugger;
     /// 1st fn that runs on mount, just sets the values and sets the initialInputArr and inputArr
     // if (barCount === 30) {
     let initialArr = [
@@ -103,7 +108,6 @@ const App: React.FC<props> = () => {
 
   // to set the inputArr based on the stepped options
   useEffect(() => {
-    // debugger;
     const inputArrsLength = inputArrs.length;
     if (offset !== 0) {
       try {
@@ -409,11 +413,6 @@ const App: React.FC<props> = () => {
       stack[++top] = end;
       const sort = (ops: number) =>
         setTimeout(() => {
-          if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
-            finish();
-            return;
-          }
-
           if (!isCurrentlySorting.current) {
             sort(getCurrentSpeed());
             return;
@@ -471,6 +470,9 @@ const App: React.FC<props> = () => {
               comparisonIdx = -1;
               i = -1;
             }
+          } else {
+            finish();
+            return;
           }
           sort(getCurrentSpeed());
         }, ops);
@@ -607,7 +609,105 @@ const App: React.FC<props> = () => {
   };
 
   return (
-    <div>
+    <Main>
+      <div>
+        <p>Steps executed: {counter}</p>
+        <button
+          disabled={
+            currentSorter === "mergeSort" || (!isSortingFinished && counter > 0)
+          }
+          onClick={reset}
+        >
+          reset
+        </button>
+        <div style={{ display: "flex" }}>
+          {[
+            { name: "bubbleSort", fn: () => setCurrentSorter("bubbleSort") },
+            {
+              name: "selectionSort",
+              fn: () => setCurrentSorter("selectionSort"),
+            },
+            {
+              name: "insertionSort",
+              fn: () => setCurrentSorter("insertionSort"),
+            },
+            { name: "mergeSort", fn: () => setCurrentSorter("mergeSort") },
+            { name: "quickSort", fn: () => setCurrentSorter("quickSort") },
+            { name: "shellSort", fn: () => setCurrentSorter("shellSort") },
+          ].map((sorter) => (
+            <button
+              key={sorter.name}
+              disabled={currentSorter !== ""}
+              onClick={sorter.fn}
+            >
+              <p
+                style={{
+                  fontWeight: sorter.name === currentSorter ? "bold" : "normal",
+                }}
+              >
+                {sorter.name}
+              </p>
+            </button>
+          ))}
+        </div>
+        <div id="controls" style={{ display: "flex" }}>
+          <button
+            id="stepBack"
+            ref={stepBackRef}
+            disabled={
+              (currentSorter === "mergeSort" && counter > 0) ||
+              // inputArrs[inputArr.length - offset] === undefined ||
+              isSortingFinished
+            }
+          >
+            Step back
+          </button>
+          <button
+            ref={playPauseButton}
+            disabled={
+              currentSorter === "" ||
+              (currentSorter === "mergeSort" && counter > 0)
+            }
+            onClick={() => handleSorting("toggle")}
+          >
+            Play
+          </button>
+          <button
+            id="stepForward"
+            ref={stepForwardRef}
+            disabled={
+              (currentSorter === "mergeSort" && counter > 0) ||
+              offset === 0 ||
+              isSortingFinished
+            }
+          >
+            Step Forward
+          </button>
+          <input
+            type="range"
+            min="1"
+            max="20"
+            value={sliderVal}
+            onChange={(e) =>
+              setSliderVal(
+                !(currentSorter === "mergeSort" && counter > 0)
+                  ? parseInt(e.target.value)
+                  : sliderVal
+              )
+            }
+          />
+          <input
+            type="range"
+            min="10"
+            max="150"
+            value={barCount}
+            onChange={(e) =>
+              !isCurrentlySorting.current &&
+              setBarCount(parseInt(e.target.value))
+            }
+          />
+        </div>
+      </div>
       <SortContainer
         barCount={barCount}
         counter={counter}
@@ -616,102 +716,7 @@ const App: React.FC<props> = () => {
         finishedSorting={isSortingFinished}
         currentBar={currentBar}
       />
-      <p>Steps executed: {counter}</p>
-      <button
-        disabled={
-          currentSorter === "mergeSort" || (!isSortingFinished && counter > 0)
-        }
-        onClick={reset}
-      >
-        reset
-      </button>
-      <div style={{ display: "flex" }}>
-        {[
-          { name: "bubbleSort", fn: () => setCurrentSorter("bubbleSort") },
-          {
-            name: "selectionSort",
-            fn: () => setCurrentSorter("selectionSort"),
-          },
-          {
-            name: "insertionSort",
-            fn: () => setCurrentSorter("insertionSort"),
-          },
-          { name: "mergeSort", fn: () => setCurrentSorter("mergeSort") },
-          { name: "quickSort", fn: () => setCurrentSorter("quickSort") },
-          { name: "shellSort", fn: () => setCurrentSorter("shellSort") },
-        ].map((sorter) => (
-          <button
-            key={sorter.name}
-            disabled={currentSorter !== ""}
-            onClick={sorter.fn}
-          >
-            <p
-              style={{
-                fontWeight: sorter.name === currentSorter ? "bold" : "normal",
-              }}
-            >
-              {sorter.name}
-            </p>
-          </button>
-        ))}
-      </div>
-      <div id="controls" style={{ display: "flex" }}>
-        <button
-          id="stepBack"
-          ref={stepBackRef}
-          disabled={
-            (currentSorter === "mergeSort" && counter > 0) ||
-            // inputArrs[inputArr.length - offset] === undefined ||
-            isSortingFinished
-          }
-        >
-          Step back
-        </button>
-        <button
-          ref={playPauseButton}
-          disabled={
-            currentSorter === "" ||
-            (currentSorter === "mergeSort" && counter > 0)
-          }
-          onClick={() => handleSorting("toggle")}
-        >
-          Play
-        </button>
-        <button
-          id="stepForward"
-          ref={stepForwardRef}
-          disabled={
-            (currentSorter === "mergeSort" && counter > 0) ||
-            offset === 0 ||
-            isSortingFinished
-          }
-        >
-          Step Forward
-        </button>
-        <input
-          type="range"
-          min="1"
-          max="20"
-          value={sliderVal}
-          onChange={(e) =>
-            setSliderVal(
-              !(currentSorter === "mergeSort" && counter > 0)
-                ? parseInt(e.target.value)
-                : sliderVal
-            )
-          }
-        />
-        <input
-          type="range"
-          min="4"
-          max="150"
-          value={barCount}
-          onChange={(e) =>
-            !isCurrentlySorting.current && setBarCount(parseInt(e.target.value))
-          }
-        />
-      </div>
-    </div>
+    </Main>
   );
 };
 

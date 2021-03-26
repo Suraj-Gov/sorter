@@ -20,20 +20,41 @@ const BarComponent = styled.div.attrs<props>((props) => ({
     width: props.width + "px",
     position: "relative",
     display: "flex",
-    marginRight: props.width / 5 + "px",
+    marginRight: props.width / 3 + "px",
     flexDirection: "column",
     justifyContent: "flex-end",
     alignItems: "center",
+    paddingBottom: "10px",
     border: "none",
     borderTop: `${props.isCurrent ? 10 : 0}px solid white`,
-    backgroundColor:
-      props.barMoving || props.finishedSorting ? "#ff661f" : "#bfa797",
+    background:
+      "linear-gradient(0deg, rgba(0,83,206,1) 0%, rgba(60,75,231,1) 100%)",
     transform: `translateX(${props.xPos}px)`,
     transition: `all ${
       props.swapAnimationDuration / 1000
-    }s cubic-bezier(0.85, 0, 0.15, 1), backgroundColor 0.2s ease-in-out, border 0.15s ease-in-out`,
+    }s cubic-bezier(0.85, 0, 0.15, 1),
+    opacity 0.05s ease-in-out,
+    background 0.2s ease-in-out,
+    border 0.15s ease-in-out,
+    width 0.1s ease-in-out`,
+    zIndex: "1",
+    opacity: props.barMoving || props.finishedSorting ? "1" : "0.6",
   },
-}))<props>``;
+}))<props>`
+  &::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: "";
+    z-index: 2;
+    transition: opacity 0.1s ease-in-out;
+    opacity: 0;
+    /* props.barMoving || props.finishedSorting */
+  }
+`;
 
 const Bar: React.FC<props> = ({
   width,

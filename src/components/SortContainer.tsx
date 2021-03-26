@@ -9,6 +9,9 @@ const Container = styled.div`
   justify-content: center;
   align-items: flex-end;
   position: relative;
+  height: 100vh;
+  overflow: hidden;
+  padding: 0em;
 `;
 
 interface props {
@@ -31,11 +34,34 @@ const SortContainer: React.FC<props> = ({
   const [xPositions, setXPositions] = useState<number[]>([]);
   const [movingBars, setMovingBars] = useState<number[]>([]);
   const [width, setWidth] = useState(20);
+  const [sortContainerDimensions, setSortContainerDimensions] = useState({
+    width: 1000,
+    height: 700,
+  });
   const { speedContext } = useContext(SpeedContext);
 
+  const setContainerDimensions = () => {
+    const container = document.getElementById("sortContainer");
+    if (container)
+      setSortContainerDimensions({
+        height: container.getBoundingClientRect().height,
+        width: container.getBoundingClientRect().width - 12 * 5 * 2,
+      });
+  };
   useEffect(() => {
-    setWidth(1000 / barCount);
-  }, [barCount]);
+    window.addEventListener("resize", (_) => {
+      setContainerDimensions();
+    });
+    return () => window.removeEventListener("resize", () => {});
+  }, []);
+
+  useEffect(() => {
+    setContainerDimensions();
+  }, []);
+
+  useEffect(() => {
+    setWidth((sortContainerDimensions.width * 0.75) / barCount);
+  }, [barCount, sortContainerDimensions.width]);
 
   useEffect(() => {
     if (!finishedSorting) {
@@ -69,7 +95,7 @@ const SortContainer: React.FC<props> = ({
           if (inputArr[iidx].id === i) {
             // if the inputArr offset elements are detected, calculate offset and push it
             // (initArrPos - inputArrPos) * barWidth
-            offsets.push((iidx - i) * (width + width / 5));
+            offsets.push((iidx - i) * (width + width / 3));
             break;
           }
         }
@@ -88,13 +114,13 @@ const SortContainer: React.FC<props> = ({
   }, [inputArr]);
 
   return (
-    <Container>
+    <Container id="sortContainer" style={{ backgroundColor: "#AAD6FF" }}>
       {initialInputArr.map((i, idx) => {
         return (
           <Bar
             isCurrent={currentBar.includes(i.id)}
             xPos={xPositions[idx]}
-            height={(i.val / barCount) * 500}
+            height={(i.val / barCount) * (sortContainerDimensions.height - 50)}
             width={width}
             key={i.id}
             value={i.val}
