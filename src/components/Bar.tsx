@@ -12,19 +12,22 @@ interface props {
   barMoving: boolean;
   finishedSorting: boolean;
   isCurrent: boolean;
+  hideVal: boolean;
 }
 
-const BarComponent = styled.div<props>`
+const BarComponent = styled.div.attrs<props>((props) => ({
+  style: {
+    height: props.height + "px",
+    width: props.width + "px",
+  },
+}))<props>`
   border-bottom: 0px solid black;
-  height: ${(props) => props.height + "px"};
-  width: ${(props) => props.width + "px"};
-  margin-right: 5px;
+  margin-right: ${(props) => props.width / 5 + "px"};
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  padding: 5px 0px;
   background-color: ${(props) => (props.isCurrent ? "blue" : "")};
   background-color: ${(props) =>
     props.barMoving || props.finishedSorting ? "#ff661f" : "#bfa797"};
@@ -40,6 +43,7 @@ const Bar: React.FC<props> = ({
   barMoving,
   finishedSorting,
   isCurrent,
+  hideVal,
 }) => {
   const barRef = useRef<HTMLDivElement>(null);
   const { speedContext } = useContext(SpeedContext);
@@ -80,8 +84,13 @@ const Bar: React.FC<props> = ({
         xPos={0}
         barMoving={barMoving}
         finishedSorting={finishedSorting}
+        hideVal={hideVal}
       >
-        <span style={{ color: "white" }}>{value && value * 2}</span>
+        {!hideVal && (
+          <span style={{ position: "absolute", bottom: "-30", color: "white" }}>
+            {value && value}
+          </span>
+        )}
       </BarComponent>
     </div>
   );

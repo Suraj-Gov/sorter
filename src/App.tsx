@@ -23,18 +23,7 @@ const checkIfSortingIsComplete = (sortedArr: Input[], inputArr: Input[]) => {
 };
 
 const App: React.FC<props> = () => {
-  const initialInputArr = useRef<Input[]>([
-    // this will be the values of test array
-    { id: 0, val: 3.4 },
-    { id: 1, val: 2.8 },
-    { id: 2, val: 1.9 },
-    { id: 3, val: 3.0 },
-    { id: 4, val: 2.3 },
-    { id: 5, val: 4.0 },
-    { id: 6, val: 2.9 },
-    { id: 7, val: 3.7 },
-    { id: 8, val: 1.1 },
-  ]);
+  const initialInputArr = useRef<Input[]>([]);
   const [inputArr, setInputArr] = useState<Input[]>([]);
   const isCurrentlySorting = useRef(false);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
@@ -53,15 +42,43 @@ const App: React.FC<props> = () => {
   const { setSpeedContext } = useContext(SpeedContext);
   const stepBackRef = useRef<HTMLButtonElement>(null);
   const stepForwardRef = useRef<HTMLButtonElement>(null);
+  const [barCount, setBarCount] = useState(30);
 
   useEffect(() => {
-    /// 1st fn that runs on mount, just resets the values and sets the initialInputArr and inputArr
-    reset();
-    const init = [...initialInputArr.current];
-    setInputArr(init);
-    // if I add reset to the dep array, it calls it on every render
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // debugger;
+    /// 1st fn that runs on mount, just sets the values and sets the initialInputArr and inputArr
+    // if (barCount === 30) {
+    let initialArr = [
+      ...Array.from(Array(barCount)).map((_, idx) => ({
+        id: idx,
+        val: Math.floor(Math.random() * barCount + 1),
+      })),
+    ];
+    initialInputArr.current = [...initialArr];
+    setInputArr([...initialArr]);
+    // } else {
+    //   const diff = barCount - initialInputArr.current.length;
+    //   if (diff > 0) {
+    //     const newArr = [...initialInputArr.current];
+    //     for (let i = 0; i < diff; i++) {
+    //       newArr.push({
+    //         id: newArr.length,
+    //         val: Math.floor(Math.random() * (newArr.length + 1)),
+    //       });
+    //     }
+    //     initialInputArr.current = [...newArr];
+    //     setInputArr([...newArr]);
+    //   } else {
+    //     const newArr = [...initialInputArr.current].slice(
+    //       0,
+    //       initialInputArr.current.length + diff
+    //     );
+    //     initialInputArr.current = [...newArr];
+    //     setInputArr([...inputArr]);
+    //   }
+    // }
+    // eslint-disable-next-line
+  }, [barCount]);
 
   // idk why I added this
   useEffect(() => {
@@ -78,12 +95,10 @@ const App: React.FC<props> = () => {
       ...prev,
       operationsInterval: newOpsInterval,
     }));
-    if (newOpsInterval < 350) {
-      setSpeedContext((prev) => ({
-        ...prev,
-        swapAnimationDuration: newOpsInterval * 0.75,
-      }));
-    }
+    setSpeedContext((prev) => ({
+      ...prev,
+      swapAnimationDuration: newOpsInterval * 0.95,
+    }));
   }, [sliderVal, setSpeedContext]);
 
   // to set the inputArr based on the stepped options
@@ -127,12 +142,13 @@ const App: React.FC<props> = () => {
     setCurrentSorter("");
     isCurrentlySorting.current = false;
     setCurrentBar([-1]);
-    initialInputArr.current = [
-      ...Array.from(Array(30)).map((_, idx) => ({
+    let initialArr = [
+      ...Array.from(Array(barCount)).map((_, idx) => ({
         id: idx,
-        val: Math.round(Math.random() * 10 * 2) / 2 + 1,
+        val: Math.floor(Math.random() * barCount),
       })),
     ];
+    initialInputArr.current = [...initialArr];
     if (intervalId) {
       clearInterval(intervalId);
       setIntervalId(undefined);
@@ -360,9 +376,9 @@ const App: React.FC<props> = () => {
             setCounter((c) => c + 1);
           }
         }
-        if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
-          finish();
-        }
+        // if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
+        //   finish();
+        // }
       }, getCurrentSpeed() * sortDelayCounter.current);
     };
     const mergeSort = (inputArr: Input[], l: number, h: number) => {
@@ -593,6 +609,7 @@ const App: React.FC<props> = () => {
   return (
     <div>
       <SortContainer
+        barCount={barCount}
         counter={counter}
         inputArr={inputArr}
         initialInputArr={initialInputArr.current}
@@ -682,6 +699,15 @@ const App: React.FC<props> = () => {
                 ? parseInt(e.target.value)
                 : sliderVal
             )
+          }
+        />
+        <input
+          type="range"
+          min="4"
+          max="150"
+          value={barCount}
+          onChange={(e) =>
+            !isCurrentlySorting.current && setBarCount(parseInt(e.target.value))
           }
         />
       </div>

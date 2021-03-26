@@ -6,11 +6,12 @@ import Bar from "./Bar";
 const Container = styled.div`
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: flex-end;
   position: relative;
 `;
 
 interface props {
+  barCount: number;
   counter: number;
   inputArr: Input[];
   initialInputArr: Input[];
@@ -24,9 +25,15 @@ const SortContainer: React.FC<props> = ({
   initialInputArr,
   finishedSorting,
   currentBar,
+  barCount,
 }) => {
   const [xPositions, setXPositions] = useState<number[]>([]);
   const [movingBars, setMovingBars] = useState<number[]>([]);
+  const [width, setWidth] = useState(20);
+
+  useEffect(() => {
+    setWidth(1000 / barCount);
+  }, [barCount]);
 
   useEffect(() => {
     if (!finishedSorting) {
@@ -45,7 +52,6 @@ const SortContainer: React.FC<props> = ({
     if (inputArr.length !== 0 && counter > 0) {
       setMovingBars([]);
       // if the inputArr is not empty
-      const barWidth = 25;
       // hard coded barwidth
       // TODO: make it dynamic based on bar width on DOM
       const offsets = [];
@@ -61,7 +67,7 @@ const SortContainer: React.FC<props> = ({
           if (inputArr[iidx].id === i) {
             // if the inputArr offset elements are detected, calculate offset and push it
             // (initArrPos - inputArrPos) * barWidth
-            offsets.push((iidx - i) * barWidth);
+            offsets.push((iidx - i) * (width + width / 5));
             break;
           }
         }
@@ -86,12 +92,13 @@ const SortContainer: React.FC<props> = ({
           <Bar
             isCurrent={currentBar.includes(i.id)}
             xPos={xPositions[idx]}
-            height={50 * i.val}
-            width={20}
+            height={(i.val / barCount) * 500}
+            width={width}
             key={i.id}
-            value={i.id / 2}
+            value={i.val}
             barMoving={movingBars.includes(idx)}
             finishedSorting={finishedSorting}
+            hideVal={width < 20}
           />
         );
       })}
