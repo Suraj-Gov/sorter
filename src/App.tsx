@@ -353,6 +353,9 @@ const App: React.FC<props> = () => {
       setTimeout(() => {
         // cannot pause, or alter speed in merge sort, I just don't know how to do merge sort iteratively
         setCurrentBar(inputArr.slice(start, end).map((i) => i.id));
+        if (start === 0 && end === inputArr.length - 1) {
+          finish();
+        }
         let start2 = mid + 1;
         if (inputArr[mid].val <= inputArr[start2].val) {
           setCounter((c) => c + 1);
@@ -376,9 +379,6 @@ const App: React.FC<props> = () => {
             setCounter((c) => c + 1);
           }
         }
-        // if (checkIfSortingIsComplete(sortedArr.current, inputArr)) {
-        //   finish();
-        // }
       }, getCurrentSpeed() * sortDelayCounter.current);
     };
     const mergeSort = (inputArr: Input[], l: number, h: number) => {

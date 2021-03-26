@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Input } from "../App";
+import SpeedContext from "../contexts/SpeedContext";
 import Bar from "./Bar";
 
 const Container = styled.div`
@@ -30,6 +31,7 @@ const SortContainer: React.FC<props> = ({
   const [xPositions, setXPositions] = useState<number[]>([]);
   const [movingBars, setMovingBars] = useState<number[]>([]);
   const [width, setWidth] = useState(20);
+  const { speedContext } = useContext(SpeedContext);
 
   useEffect(() => {
     setWidth(1000 / barCount);
@@ -99,6 +101,7 @@ const SortContainer: React.FC<props> = ({
             barMoving={movingBars.includes(idx)}
             finishedSorting={finishedSorting}
             hideVal={width < 20}
+            swapAnimationDuration={speedContext.swapAnimationDuration}
           />
         );
       })}
