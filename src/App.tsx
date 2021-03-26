@@ -46,8 +46,12 @@ const App: React.FC<props> = () => {
   const sortedArr = useRef<Input[]>([]);
   const operationsInterval = useRef(500);
   const sortDelayCounter = useRef(0);
+  const inputArrs = useRef<Input[][]>([]);
+  const currentBars = useRef<number[][]>([]);
   const playPauseButton = useRef<HTMLButtonElement>(null);
   const { setSpeedContext } = useContext(SpeedContext);
+  const stepBackRef = useRef<HTMLButtonElement>(null);
+  const stepForwardRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     /// 1st fn that runs on mount, just resets the values and sets the initialInputArr and inputArr
@@ -81,6 +85,8 @@ const App: React.FC<props> = () => {
     }
   }, [sliderVal, setSpeedContext]);
 
+  let handleSorting: (option: "toggle" | "no toggle") => void;
+
   const reset = () => {
     setCurrentSorter("");
     isCurrentlySorting.current = false;
@@ -101,13 +107,19 @@ const App: React.FC<props> = () => {
     handleSorting("no toggle");
   };
 
-  const init = () => {
+  const init = useCallback(() => {
+    currentBars.current = [];
+    inputArrs.current = [];
     isCurrentlySorting.current = true;
     sortDelayCounter.current = 0;
     setIsSortingFinished(false);
     setCounter(0);
+    if (stepBackRef.current && stepForwardRef.current) {
+      stepBackRef.current.disabled = isCurrentlySorting.current;
+      stepForwardRef.current.disabled = isCurrentlySorting.current;
+    }
     return { i: 0, j: 0 };
-  };
+  }, []);
 
   const finish = (intervalId?: NodeJS.Timeout) => {
     isCurrentlySorting.current = false;
@@ -146,7 +158,9 @@ const App: React.FC<props> = () => {
               setCurrentBar([inputArr[j + 1].id, inputArr[j].id]);
             }
             // swap if the left element is more than right element
+            inputArrs.current.push(inputArr);
             setInputArr([...inputArr]);
+            currentBars.current.push([inputArr[j + 2]?.id, inputArr[j + 1].id]);
             setCurrentBar([inputArr[j + 2]?.id, inputArr[j + 1].id]);
             // set the array after swapping
             j++;
@@ -166,7 +180,7 @@ const App: React.FC<props> = () => {
         // TODO: allow for dynamic speed
       }, ops);
     sort(getCurrentSpeed());
-  }, [inputArr]);
+  }, [inputArr, init]);
 
   const insertionSort = useCallback(() => {
     let { i, j } = init();
@@ -192,11 +206,15 @@ const App: React.FC<props> = () => {
           if (j >= 0 && inputArr[j].val > key.val) {
             inputArr[j + 1] = inputArr[j];
             j = j - 1;
+            inputArrs.current.push(inputArr);
+            currentBars.current.push([inputArr[j]?.id, inputArr[i]?.id]);
             setCurrentBar([inputArr[j]?.id, inputArr[i]?.id]);
           } else {
             // the part after the while loop ⬇
             inputArr[j + 1] = key;
             j = -9;
+            inputArrs.current.push(inputArr);
+            currentBars.current.push([inputArr[j]?.id, inputArr[i]?.id]);
             setCurrentBar([inputArr[i]?.id]);
             i++;
             setInputArr([...inputArr]);
@@ -207,7 +225,7 @@ const App: React.FC<props> = () => {
         }
       }, ops);
     sort(getCurrentSpeed());
-  }, [inputArr]);
+  }, [inputArr, init]);
 
   const selectionSort = useCallback(() => {
     let { i, j } = init();
@@ -226,7 +244,12 @@ const App: React.FC<props> = () => {
             lowestPos = i - 1;
             j = i;
           }
-          setCurrentBar([inputArr[j - 1].id]);
+          inputArrs.current.push(inputArr);
+          currentBars.current.push([
+            inputArr[j - 1].id,
+            inputArr[lowestPos].id,
+          ]);
+          setCurrentBar([inputArr[j - 1].id, inputArr[lowestPos].id]);
           if (j < inputArr.length) {
             if (inputArr[j].val < inputArr[lowestPos].val) {
               lowestPos = j;
@@ -237,6 +260,8 @@ const App: React.FC<props> = () => {
               inputArr[i - 1],
               inputArr[lowestPos],
             ];
+            inputArrs.current.push(inputArr);
+            currentBars.current.push([inputArr[j - 1].id]);
             setInputArr([...inputArr]);
             i++;
             j = -9;
@@ -247,7 +272,7 @@ const App: React.FC<props> = () => {
         }
       }, ops);
     sort(getCurrentSpeed());
-  }, [inputArr]);
+  }, [inputArr, init]);
 
   const mergeSort = () => {
     init();
@@ -379,7 +404,7 @@ const App: React.FC<props> = () => {
     };
 
     quickSort(inputArr, 0, inputArr.length - 1);
-  }, [inputArr]);
+  }, [inputArr, init]);
 
   const shellSort = () => {
     let { i, j: gap } = init();
@@ -449,14 +474,20 @@ const App: React.FC<props> = () => {
     sort(getCurrentSpeed());
   };
 
-  const handleSorting = (option: "toggle" | "no toggle") => {
+  handleSorting = (option: "toggle" | "no toggle") => {
     if (option === "toggle")
       isCurrentlySorting.current = !isCurrentlySorting.current;
     if (currentSorter !== "mergeSort") {
-      if (playPauseButton.current) {
+      if (
+        playPauseButton.current &&
+        stepBackRef.current &&
+        stepForwardRef.current
+      ) {
         playPauseButton.current.innerHTML = !isCurrentlySorting.current
           ? "Play"
           : "Pause";
+        stepBackRef.current.disabled = isCurrentlySorting.current;
+        stepForwardRef.current.disabled = isCurrentlySorting.current;
       }
     }
     if (isCurrentlySorting.current) {
@@ -501,7 +532,7 @@ const App: React.FC<props> = () => {
       <p>Steps executed: {counter}</p>
       <button
         disabled={
-          currentSorter === "mergeSort" && !isSortingFinished && counter > 0
+          currentSorter === "mergeSort" || (!isSortingFinished && counter > 0)
         }
         onClick={reset}
       >
@@ -539,9 +570,8 @@ const App: React.FC<props> = () => {
       </div>
       <div style={{ display: "flex" }}>
         <button
-          disabled={
-            counter === 0 || (currentSorter === "mergeSort" && counter > 0)
-          }
+          ref={stepBackRef}
+          disabled={currentSorter === "mergeSort" && counter > 0}
         >
           Step back
         </button>
@@ -556,9 +586,8 @@ const App: React.FC<props> = () => {
           Play
         </button>
         <button
-          disabled={
-            counter === 0 || (currentSorter === "mergeSort" && counter > 0)
-          }
+          ref={stepForwardRef}
+          disabled={currentSorter === "mergeSort" && counter > 0}
         >
           Step Forward
         </button>
