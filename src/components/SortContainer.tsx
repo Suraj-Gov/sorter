@@ -39,6 +39,8 @@ const SortContainer: React.FC<props> = ({
   });
   const { speedContext } = useContext(SpeedContext);
 
+  // reset positions
+
   const setContainerDimensions = () => {
     const container = document.getElementById("sortContainer");
     if (container)
@@ -111,6 +113,11 @@ const SortContainer: React.FC<props> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputArr]);
+
+  useEffect(() => {
+    setXPositions([...initialInputArr.map((_) => 0)]);
+    setMovingBars([]);
+  }, [initialInputArr]);
 
   return (
     <Container id="sortContainer" style={{ backgroundColor: "#AAD6FF" }}>

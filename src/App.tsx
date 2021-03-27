@@ -40,7 +40,6 @@ const App: React.FC<props> = () => {
   const isCurrentlySorting = useRef(false);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
   const [counter, setCounter] = useState(0);
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
   const [currentBar, setCurrentBar] = useState([-1]);
   const [currentSorter, setCurrentSorter] = useState("");
   const [sliderVal, setSliderVal] = useState(5);
@@ -127,23 +126,33 @@ const App: React.FC<props> = () => {
   let handleSorting: (option: "toggle" | "no toggle") => void;
 
   const reset = () => {
-    // setCurrentSorter("");
     isCurrentlySorting.current = false;
     setCurrentBar([-1]);
-    let initialArr = [
-      ...Array.from(Array(barCount)).map((_, idx) => ({
-        id: idx,
-        val: Math.floor(Math.random() * barCount),
-      })),
-    ];
-    initialInputArr.current = [...initialArr];
-    if (intervalId) {
-      clearInterval(intervalId);
-      setIntervalId(undefined);
+    if (counter > 0) {
+      initialInputArr.current = [...initialInputArr.current];
+      setInputArr([...initialInputArr.current]);
+    } else {
+      let initialArr = [
+        ...Array.from(Array(barCount)).map((_, idx) => ({
+          id: idx,
+          val: Math.floor(Math.random() * barCount),
+        })),
+      ];
+      initialInputArr.current = [...initialArr];
+      setInputArr([...initialInputArr.current]);
     }
-    setInputArr([...initialInputArr.current]);
+    setInputArrs([]);
+    setCurrentBars([]);
+    setCurrentBar([]);
     setCounter(0);
     setIsSortingFinished(false);
+    if (playPauseButton.current) {
+      playPauseButton.current.innerHTML = `<svg viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 37.3713V2.43737C0 0.903735 1.65505 -0.0592372 2.98833 0.698632L32.1 17.2463C33.4131 17.9927 33.4567 19.8695 32.1796 20.676L3.06799 39.0623C1.73625 39.9034 0 38.9465 0 37.3713Z" fill="#7F7F7F"/>
+</svg>`;
+      playPauseButton.current.disabled = false;
+    }
+
     // handleSorting("no toggle");
   };
 
@@ -186,8 +195,12 @@ const App: React.FC<props> = () => {
     const sort = (ops: number) =>
       setTimeout(() => {
         if (!isCurrentlySorting.current) {
-          sort(getCurrentSpeed());
-          return;
+          if (counter === 0) {
+            return;
+          } else {
+            sort(getCurrentSpeed());
+            return;
+          }
         }
         setOffset(0);
         // the main looping
@@ -243,8 +256,12 @@ const App: React.FC<props> = () => {
     const sort = (ops: number) =>
       setTimeout(() => {
         if (!isCurrentlySorting.current) {
-          sort(getCurrentSpeed());
-          return;
+          if (counter === 0) {
+            return;
+          } else {
+            sort(getCurrentSpeed());
+            return;
+          }
         }
         setOffset(0);
         setCounter((c) => c + 1);
@@ -292,8 +309,12 @@ const App: React.FC<props> = () => {
     const sort = (ops: number) =>
       setTimeout(() => {
         if (!isCurrentlySorting.current) {
-          sort(getCurrentSpeed());
-          return;
+          if (counter === 0) {
+            return;
+          } else {
+            sort(getCurrentSpeed());
+            return;
+          }
         }
         setOffset(0);
         setCounter((c) => c + 1);
@@ -404,8 +425,12 @@ const App: React.FC<props> = () => {
       const sort = (ops: number) =>
         setTimeout(() => {
           if (!isCurrentlySorting.current) {
-            sort(getCurrentSpeed());
-            return;
+            if (counter === 0) {
+              return;
+            } else {
+              sort(getCurrentSpeed());
+              return;
+            }
           }
           setOffset(0);
           setCounter((c) => c + 1);
@@ -481,8 +506,12 @@ const App: React.FC<props> = () => {
     const sort = (ops: number) =>
       setTimeout(() => {
         if (!isCurrentlySorting.current) {
-          sort(getCurrentSpeed());
-          return;
+          if (counter === 0) {
+            return;
+          } else {
+            sort(getCurrentSpeed());
+            return;
+          }
         }
         setOffset(0);
         if (gap >= 1) {

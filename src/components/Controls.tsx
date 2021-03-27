@@ -67,6 +67,10 @@ const StepButton = styled.button`
   height: 2.5rem;
   transition: all 0.1s ease-in-out;
 
+  & svg {
+    width: 20px;
+  }
+
   &:disabled {
     opacity: 0.5;
   }
@@ -89,10 +93,11 @@ const SliderContainer = styled.div`
     width: 16px;
     height: 16px;
     border-radius: 50%;
+    border: none;
   }
   & svg {
     fill: rgb(63, 208, 143);
-    width: 25px;
+    width: 28px;
     margin: 0.5rem;
   }
 `;
