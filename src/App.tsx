@@ -11,7 +11,6 @@ import SpeedContext from "./contexts/SpeedContext";
 import styled from "styled-components";
 import Controls from "./components/Controls";
 import SortOptions from "./components/SortOptions";
-import playIcon from "./icons/play";
 
 const Main = styled.div`
   display: grid;
@@ -20,10 +19,10 @@ const Main = styled.div`
     display: flex;
     flex-direction: column-reverse;
     & > *:nth-child(1) {
-      height: 45vh;
+      height: 50vh;
     }
     & > *:nth-child(2) {
-      height: 55vh;
+      height: 50vh;
     }
   }
 `;
@@ -68,28 +67,6 @@ const App: React.FC<props> = () => {
     ];
     initialInputArr.current = [...initialArr];
     setInputArr([...initialArr]);
-    // } else {
-    //   const diff = barCount - initialInputArr.current.length;
-    //   if (diff > 0) {
-    //     const newArr = [...initialInputArr.current];
-    //     for (let i = 0; i < diff; i++) {
-    //       newArr.push({
-    //         id: newArr.length,
-    //         val: Math.floor(Math.random() * (newArr.length + 1)),
-    //       });
-    //     }
-    //     initialInputArr.current = [...newArr];
-    //     setInputArr([...newArr]);
-    //   } else {
-    //     const newArr = [...initialInputArr.current].slice(
-    //       0,
-    //       initialInputArr.current.length + diff
-    //     );
-    //     initialInputArr.current = [...newArr];
-    //     setInputArr([...inputArr]);
-    //   }
-    // }
-    // eslint-disable-next-line
   }, [barCount]);
 
   // idk why I added this

@@ -5,6 +5,8 @@ import styled from "styled-components";
 import PlayIcon from "../icons/play";
 import NextIcon from "../icons/next";
 import PrevIcon from "../icons/prev";
+import LessBarsIcon from "../icons/lessBars";
+import MoreBarsIcon from "../icons/moreBars";
 
 interface props {
   stepBackRef: React.RefObject<HTMLButtonElement>;
@@ -25,7 +27,7 @@ interface props {
 const ControlsContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 3rem);
-  grid-gap: 1rem;
+  gap: 1rem;
   place-content: center;
   justify-items: center;
   align-items: center;
@@ -41,6 +43,11 @@ const PlayButton = styled.button`
   background-color: #c4c4c4;
   color: white;
   border-radius: 10px;
+  transition: all 0.1s ease-in-out;
+
+  &:disabled {
+    opacity: 0.5;
+  }
 
   & > svg {
     width: 100%;
@@ -58,6 +65,36 @@ const StepButton = styled.button`
   border-radius: 10px;
   width: 2.5rem;
   height: 2.5rem;
+  transition: all 0.1s ease-in-out;
+
+  &:disabled {
+    opacity: 0.5;
+  }
+`;
+
+const SliderContainer = styled.div`
+  display: flex;
+  align-items: center;
+  & input {
+    appearance: none;
+    --webkit-appearance: none;
+    background-color: #c4c4c4;
+    height: 6px;
+    border-radius: 5px;
+  }
+  & input::-webkit-slider-thumb {
+    --webkit-appearance: none;
+    appearance: none;
+    background-color: rgb(63, 208, 143);
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+  }
+  & svg {
+    fill: rgb(63, 208, 143);
+    width: 25px;
+    margin: 0.5rem;
+  }
 `;
 
 const Controls: React.FC<props> = ({
@@ -110,28 +147,43 @@ const Controls: React.FC<props> = ({
         style={{
           marginTop: "1rem",
           display: "grid",
-          gridTemplateRows: "repeat(2, 1fr)",
+          gridTemplateRows: "repeat(2, auto)",
           placeItems: "center",
-          gap: "1.5rem",
+          gap: "0.8rem",
         }}
       >
-        <div>
-          <input
-            type="range"
-            min="1"
-            max="20"
-            value={sliderVal}
-            onChange={(e) =>
-              setSliderVal(
-                !(currentSorter === "mergeSort" && counter > 0)
-                  ? parseInt(e.target.value)
-                  : sliderVal
-              )
-            }
-          />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <SliderContainer>
+            <Snail />
+            <input
+              type="range"
+              style={{ direction: "rtl" }}
+              min="1"
+              max="50"
+              value={sliderVal}
+              onChange={(e) =>
+                setSliderVal(
+                  !(currentSorter === "mergeSort" && counter > 0)
+                    ? parseInt(e.target.value)
+                    : sliderVal
+                )
+              }
+            />
+            <Rocket />
+          </SliderContainer>
+          <h3>{((1 / sliderVal) * 15).toFixed(1)}</h3>
+          <p style={{ fontSize: "0.8rem" }}>Operations / second</p>
         </div>
-        <div>
+        <SliderContainer>
+          <LessBarsIcon />
           <input
+            style={{ width: "15rem" }}
             type="range"
             min="10"
             max="150"
@@ -141,7 +193,8 @@ const Controls: React.FC<props> = ({
               setBarCount(parseInt(e.target.value))
             }
           />
-        </div>
+          <MoreBarsIcon />
+        </SliderContainer>
       </div>
     </div>
   );
