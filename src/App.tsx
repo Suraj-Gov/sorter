@@ -243,7 +243,7 @@ const App: React.FC<props> = () => {
         // TODO: allow for dynamic speed
       }, ops);
     sort(getCurrentSpeed());
-  }, [inputArr, init]);
+  }, [inputArr, init, counter]);
 
   const insertionSort = useCallback(() => {
     let { i, j } = init();
@@ -299,7 +299,7 @@ const App: React.FC<props> = () => {
         }
       }, ops);
     sort(getCurrentSpeed());
-  }, [inputArr, init]);
+  }, [inputArr, init, counter]);
 
   const selectionSort = useCallback(() => {
     let { i, j } = init();
@@ -354,7 +354,7 @@ const App: React.FC<props> = () => {
         }
       }, ops);
     sort(getCurrentSpeed());
-  }, [inputArr, init]);
+  }, [inputArr, init, counter]);
 
   const mergeSort = () => {
     init();
@@ -495,7 +495,7 @@ const App: React.FC<props> = () => {
     };
 
     quickSort(inputArr, 0, inputArr.length - 1);
-  }, [inputArr, init]);
+  }, [inputArr, init, counter]);
 
   const shellSort = () => {
     let { i, j: gap } = init();
