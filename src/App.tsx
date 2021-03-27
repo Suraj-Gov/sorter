@@ -188,7 +188,13 @@ const App: React.FC<props> = () => {
     isCurrentlySorting.current = false;
     setIsSortingFinished(true);
     setCurrentBar([-1]);
-    if (playPauseButton.current) playPauseButton.current.disabled = true;
+    if (playPauseButton.current) {
+      playPauseButton.current.disabled = true;
+      // prettier-ignore
+      playPauseButton.current.innerHTML = `<svg viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 37.3713V2.43737C0 0.903735 1.65505 -0.0592372 2.98833 0.698632L32.1 17.2463C33.4131 17.9927 33.4567 19.8695 32.1796 20.676L3.06799 39.0623C1.73625 39.9034 0 38.9465 0 37.3713Z" fill="#7F7F7F"/>
+</svg>`
+    }
   };
 
   const getCurrentSpeed = () => {
@@ -579,11 +585,11 @@ const App: React.FC<props> = () => {
         stepForwardRef.current
       ) {
         playPauseButton.current.innerHTML = !isCurrentlySorting.current
-          ? // prettier-ignore
+          ? // prettier-ignore play
             `<svg viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M0 37.3713V2.43737C0 0.903735 1.65505 -0.0592372 2.98833 0.698632L32.1 17.2463C33.4131 17.9927 33.4567 19.8695 32.1796 20.676L3.06799 39.0623C1.73625 39.9034 0 38.9465 0 37.3713Z" fill="#7F7F7F"/>
 </svg>`
-          : // prettier-ignore
+          : // prettier-ignore pause
             `<svg viewBox="0 0 34 40" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M0 5C0 2.23858 2.23858 0 5 0H9C11.7614 0 14 2.23858 14 5V35C14 37.7614 11.7614 40 9 40H5C2.23858 40 0 37.7614 0 35V5Z" fill="#7F7F7F"/>
 <path d="M20 5C20 2.23858 22.2386 0 25 0H29C31.7614 0 34 2.23858 34 5V35C34 37.7614 31.7614 40 29 40H25C22.2386 40 20 37.7614 20 35V5Z" fill="#7F7F7F"/>

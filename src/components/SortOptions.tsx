@@ -4,7 +4,7 @@ import styled from "styled-components";
 const Title = styled.h1`
   font-size: 2rem;
   @media only screen and (max-width: 900px) {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
   }
 `;
 
@@ -30,13 +30,13 @@ const SorterSelect = styled.select`
 `;
 
 const ShuffleButton = styled.button`
-  margin: 0.5rem 0;
   font-weight: 600;
   background-color: #000;
   color: white;
   border: none;
   border-radius: 5px;
   padding: 0.5rem;
+  margin-right: 0.5rem;
 
   &:disabled {
     opacity: 0.5;
@@ -69,7 +69,21 @@ const SortOptions: React.FC<props> = ({
     <Container>
       <div>
         <Title>Sorter</Title>
-        <p>{counter > 0 ? `${counter} steps` : " "}</p>
+        <p>
+          {counter > 0 && !isSortingFinished
+            ? `${counter} steps`
+            : isSortingFinished
+            ? "Sorted"
+            : "Unsorted"}
+        </p>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-start",
+        }}
+      >
         <ShuffleButton
           style={{}}
           disabled={!isSortingFinished && counter > 0}
@@ -77,31 +91,31 @@ const SortOptions: React.FC<props> = ({
         >
           Shuffle
         </ShuffleButton>
+        <SorterSelect
+          disabled={counter > 0}
+          onChange={(e) => {
+            const selectedSorterName = e.target.selectedOptions[0].textContent;
+            if (selectedSorterName) setCurrentSorter(selectedSorterName);
+          }}
+        >
+          {[
+            { name: "bubbleSort", fn: () => setCurrentSorter("bubbleSort") },
+            {
+              name: "selectionSort",
+              fn: () => setCurrentSorter("selectionSort"),
+            },
+            {
+              name: "insertionSort",
+              fn: () => setCurrentSorter("insertionSort"),
+            },
+            { name: "mergeSort", fn: () => setCurrentSorter("mergeSort") },
+            { name: "quickSort", fn: () => setCurrentSorter("quickSort") },
+            { name: "shellSort", fn: () => setCurrentSorter("shellSort") },
+          ].map((sorter) => (
+            <option key={sorter.name}>{sorter.name}</option>
+          ))}
+        </SorterSelect>
       </div>
-      <SorterSelect
-        disabled={counter > 0}
-        onChange={(e) => {
-          const selectedSorterName = e.target.selectedOptions[0].textContent;
-          if (selectedSorterName) setCurrentSorter(selectedSorterName);
-        }}
-      >
-        {[
-          { name: "bubbleSort", fn: () => setCurrentSorter("bubbleSort") },
-          {
-            name: "selectionSort",
-            fn: () => setCurrentSorter("selectionSort"),
-          },
-          {
-            name: "insertionSort",
-            fn: () => setCurrentSorter("insertionSort"),
-          },
-          { name: "mergeSort", fn: () => setCurrentSorter("mergeSort") },
-          { name: "quickSort", fn: () => setCurrentSorter("quickSort") },
-          { name: "shellSort", fn: () => setCurrentSorter("shellSort") },
-        ].map((sorter) => (
-          <option key={sorter.name}>{sorter.name}</option>
-        ))}
-      </SorterSelect>
     </Container>
   );
 };
