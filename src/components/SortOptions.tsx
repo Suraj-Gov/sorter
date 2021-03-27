@@ -23,6 +23,7 @@ const SorterSelect = styled.select`
   border-radius: 5px;
   background-color: #3fd08f;
   color: white;
+  appearance: none;
 
   &:disabled {
     opacity: 0.5;
