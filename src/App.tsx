@@ -638,32 +638,45 @@ const App: React.FC<props> = () => {
 
   return (
     <Main>
-      <div>
-        <SortOptions
-          barCount={barCount}
-          isCurrentlySorting={isCurrentlySorting}
-          setBarCount={setBarCount}
-          counter={counter}
-          currentSorter={currentSorter}
-          isSortingFinished={isSortingFinished}
-          reset={reset}
-          setCurrentSorter={setCurrentSorter}
-        />
-        <Controls
-          barCount={barCount}
-          isCurrentlySorting={isCurrentlySorting}
-          setBarCount={setBarCount}
-          counter={counter}
-          currentSorter={currentSorter}
-          handleSorting={handleSorting}
-          isSortingFinished={isSortingFinished}
-          offset={offset}
-          playPauseButton={playPauseButton}
-          setSliderVal={setSliderVal}
-          sliderVal={sliderVal}
-          stepBackRef={stepBackRef}
-          stepForwardRef={stepForwardRef}
-        />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
+        <div>
+          <SortOptions
+            barCount={barCount}
+            isCurrentlySorting={isCurrentlySorting}
+            setBarCount={setBarCount}
+            counter={counter}
+            currentSorter={currentSorter}
+            isSortingFinished={isSortingFinished}
+            reset={reset}
+            setCurrentSorter={setCurrentSorter}
+          />
+          <Controls
+            barCount={barCount}
+            isCurrentlySorting={isCurrentlySorting}
+            setBarCount={setBarCount}
+            counter={counter}
+            currentSorter={currentSorter}
+            handleSorting={handleSorting}
+            isSortingFinished={isSortingFinished}
+            offset={offset}
+            playPauseButton={playPauseButton}
+            setSliderVal={setSliderVal}
+            sliderVal={sliderVal}
+            stepBackRef={stepBackRef}
+            stepForwardRef={stepForwardRef}
+          />
+        </div>
+
+        <div style={{ margin: "1.5rem", textAlign: "center", color: "gray" }}>
+          <p>Powered by VVCE-ACM Student Chapter</p>
+          <p>Built with React and styled-components</p>
+        </div>
       </div>
       <SortContainer
         barCount={barCount}
