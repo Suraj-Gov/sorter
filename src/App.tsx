@@ -683,7 +683,20 @@ const App: React.FC<props> = () => {
             color: "gray",
           }}
         >
-          <p>Powered by VVCE-ACM Student Chapter</p>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <img
+              style={{ width: 20, height: 20, marginRight: "0.3rem" }}
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Association_for_Computing_Machinery_%28ACM%29_logo.svg/1200px-Association_for_Computing_Machinery_%28ACM%29_logo.svg.png"
+              alt="vvce-acm-logo"
+            />
+            <p>Powered by VVCE-ACM Student Chapter</p>
+          </div>
           <p>Built with React and styled-components</p>
         </div>
       </div>
