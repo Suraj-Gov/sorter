@@ -19,7 +19,7 @@ const Main = styled.div`
     display: flex;
     flex-direction: column-reverse;
     & > *:nth-child(1) {
-      height: 50vh;
+      height: auto;
     }
     & > *:nth-child(2) {
       height: 50vh;
@@ -58,6 +58,8 @@ const App: React.FC<props> = () => {
   useEffect(() => {
     /// 1st fn that runs on mount, just sets the values and sets the initialInputArr and inputArr
     // if (barCount === 30) {
+    setIsSortingFinished(false);
+    setCounter(0);
     let initialArr = [
       ...Array.from(Array(barCount)).map((_, idx) => ({
         id: idx,
@@ -643,6 +645,7 @@ const App: React.FC<props> = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
+          backgroundColor: "#eee",
         }}
       >
         <div>
@@ -673,7 +676,13 @@ const App: React.FC<props> = () => {
           />
         </div>
 
-        <div style={{ margin: "1.5rem", textAlign: "center", color: "gray" }}>
+        <div
+          style={{
+            margin: "1.5rem",
+            textAlign: "center",
+            color: "gray",
+          }}
+        >
           <p>Powered by VVCE-ACM Student Chapter</p>
           <p>Built with React and styled-components</p>
         </div>
