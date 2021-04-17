@@ -40,6 +40,7 @@ const App: React.FC<props> = () => {
   const isCurrentlySorting = useRef(false);
   const [isSortingFinished, setIsSortingFinished] = useState(false);
   const [counter, setCounter] = useState(0);
+  const counterRef = useRef(0);
   const [currentBar, setCurrentBar] = useState([-1]);
   const [currentSorter, setCurrentSorter] = useState("");
   const [sliderVal, setSliderVal] = useState(5);
@@ -54,6 +55,12 @@ const App: React.FC<props> = () => {
   const stepBackRef = useRef<HTMLButtonElement>(null);
   const stepForwardRef = useRef<HTMLButtonElement>(null);
   const [barCount, setBarCount] = useState(30);
+
+  // a ref can be used to get updated vals in a settimeout
+  // updating ref when the state changes
+  useEffect(() => {
+    counterRef.current = counter;
+  }, [counter]);
 
   useEffect(() => {
     /// 1st fn that runs on mount, just sets the values and sets the initialInputArr and inputArr
@@ -197,13 +204,16 @@ const App: React.FC<props> = () => {
     const sort = (ops: number) =>
       setTimeout(() => {
         if (!isCurrentlySorting.current) {
-          if (counter === 0) {
+          // if the sorting is paused
+          if (counterRef.current === 0) {
+            // if the array is reset
             return;
           } else {
+            // if the array is not reset, just run the fn again, but do not execute anything in the settimeout fn
             sort(getCurrentSpeed());
             return;
           }
-        }
+        } // else if the sorting is not paused
         setOffset(0);
         // the main looping
         if (i < inputArr.length - 1) {
@@ -245,7 +255,7 @@ const App: React.FC<props> = () => {
         // TODO: allow for dynamic speed
       }, ops);
     sort(getCurrentSpeed());
-  }, [inputArr, init, counter]);
+  }, [inputArr, init]);
 
   const insertionSort = useCallback(() => {
     let { i, j } = init();
@@ -258,7 +268,7 @@ const App: React.FC<props> = () => {
     const sort = (ops: number) =>
       setTimeout(() => {
         if (!isCurrentlySorting.current) {
-          if (counter === 0) {
+          if (counterRef.current === 0) {
             return;
           } else {
             sort(getCurrentSpeed());
@@ -301,7 +311,7 @@ const App: React.FC<props> = () => {
         }
       }, ops);
     sort(getCurrentSpeed());
-  }, [inputArr, init, counter]);
+  }, [inputArr, init]);
 
   const selectionSort = useCallback(() => {
     let { i, j } = init();
@@ -311,7 +321,7 @@ const App: React.FC<props> = () => {
     const sort = (ops: number) =>
       setTimeout(() => {
         if (!isCurrentlySorting.current) {
-          if (counter === 0) {
+          if (counterRef.current === 0) {
             return;
           } else {
             sort(getCurrentSpeed());
@@ -356,7 +366,7 @@ const App: React.FC<props> = () => {
         }
       }, ops);
     sort(getCurrentSpeed());
-  }, [inputArr, init, counter]);
+  }, [inputArr, init]);
 
   const mergeSort = () => {
     init();
@@ -427,7 +437,7 @@ const App: React.FC<props> = () => {
       const sort = (ops: number) =>
         setTimeout(() => {
           if (!isCurrentlySorting.current) {
-            if (counter === 0) {
+            if (counterRef.current === 0) {
               return;
             } else {
               sort(getCurrentSpeed());
@@ -497,7 +507,7 @@ const App: React.FC<props> = () => {
     };
 
     quickSort(inputArr, 0, inputArr.length - 1);
-  }, [inputArr, init, counter]);
+  }, [inputArr, init]);
 
   const shellSort = () => {
     let { i, j: gap } = init();
@@ -508,7 +518,7 @@ const App: React.FC<props> = () => {
     const sort = (ops: number) =>
       setTimeout(() => {
         if (!isCurrentlySorting.current) {
-          if (counter === 0) {
+          if (counterRef.current === 0) {
             return;
           } else {
             sort(getCurrentSpeed());
