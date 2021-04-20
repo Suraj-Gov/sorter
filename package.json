@@ -2,7 +2,6 @@
   "name": "sorter",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://suraj-gov.github.io/sorter",
   "dependencies": {
     "@babel/preset-typescript": "^7.12.1",
     "@testing-library/jest-dom": "^5.11.9",
