@@ -4,25 +4,33 @@
   "private": true,
   "homepage": "https://suraj-gov.github.io/sorter",
   "dependencies": {
+    "@babel/preset-typescript": "^7.12.1",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.8.1",
     "@types/animejs": "^3.1.2",
+    "@types/aws-lambda": "^8.10.75",
+    "@types/node": "^14.14.41",
     "@types/styled-components": "^5.1.7",
+    "netlify-lambda": "^2.0.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
     "styled-components": "^5.2.1",
-    "typescript": "^4.2.3",
+    "typescript": "^4.2.4",
     "web-vitals": "^1.1.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "run-p start:**",
+    "start:app": "react-scripts start",
+    "start:lambda": "netlify-lambda serve src/lambda",
+    "build": "run-p build:**",
+    "build:app": "react-scripts build",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:lambda": "netlify-lambda build src/lambda"
   },
   "eslintConfig": {
     "extends": [
@@ -43,8 +51,9 @@
     ]
   },
   "devDependencies": {
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.1",
-    "gh-pages": "^3.1.0"
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3",
+    "gh-pages": "^3.1.0",
+    "npm-run-all": "^4.1.5"
   }
 }

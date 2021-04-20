@@ -2,7 +2,7 @@ let inputArr = Array.from(Array(10)).map((_) =>
   Math.floor(Math.random() * 900)
 );
 
-const radixSort = () => {
+const radixSort = (inputArr) => {
   const maxElementDigits = inputArr
     .reduce((retVal, curVal) => (curVal >= retVal ? curVal : retVal), -1)
     .toString().length;
