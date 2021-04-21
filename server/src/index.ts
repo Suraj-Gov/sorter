@@ -1,16 +1,11 @@
-import express from "express";
-import cors from "cors";
+import express = require("express");
+import cors = require("cors");
+import dotenv = require("dotenv");
 import { Pool } from "pg";
-require("dotenv").config();
+dotenv.config();
 
 const pool = new Pool({
-  // user: "eqgxqykspnclej",
-  // database: "d4f56rpnfrfi57",
-  // host: "ec2-107-20-153-39.compute-1.amazonaws.com",
-  // port: 5432,
-  // password: process.env.DB_PASS,
-  connectionString:
-    "postgres://eqgxqykspnclej:ddd8d9280de2710272cbbdf31dcf83994ede77e05b921812c3d14538a6f3c581@ec2-107-20-153-39.compute-1.amazonaws.com:5432/d4f56rpnfrfi57",
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
   },

@@ -768,7 +768,7 @@ const App: React.FC<props> = () => {
                 different algorithms for the same array.
               </li>
             </ul>
-            {siteViewCount !== 1 && (
+            {siteViewCount !== -1 && (
               <p>
                 Views: <strong>{siteViewCount}</strong>
               </p>
