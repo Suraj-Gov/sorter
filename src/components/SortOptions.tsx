@@ -31,7 +31,7 @@ const SorterSelect = styled.select`
   }
 `;
 
-const ShuffleButton = styled.button`
+export const BlackButton = styled.button`
   font-weight: 600;
   background-color: #000;
   color: white;
@@ -86,14 +86,14 @@ const SortOptions: React.FC<props> = ({
           justifyContent: "flex-start",
         }}
       >
-        <ShuffleButton
+        <BlackButton
           disabled={
             counter > 0 && currentSorter === "mergeSort" && !isSortingFinished
           }
           onClick={reset}
         >
           {counter > 0 ? "Reset" : "Shuffle"}
-        </ShuffleButton>
+        </BlackButton>
         <div style={{ position: "relative" }}>
           <SorterSelect
             disabled={counter > 0}

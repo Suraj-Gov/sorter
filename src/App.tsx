@@ -11,6 +11,8 @@ import SpeedContext from "./contexts/SpeedContext";
 import styled from "styled-components";
 import Controls from "./components/Controls";
 import SortOptions from "./components/SortOptions";
+import { __devServer, __prod, __prodServer } from "./constants";
+import { BlackButton } from "./components/SortOptions";
 
 const Main = styled.div`
   display: grid;
@@ -55,6 +57,28 @@ const App: React.FC<props> = () => {
   const stepBackRef = useRef<HTMLButtonElement>(null);
   const stepForwardRef = useRef<HTMLButtonElement>(null);
   const [barCount, setBarCount] = useState(30);
+  const detailsRef = useRef<HTMLDivElement>(null);
+  const [siteViewCount, setSiteViewCount] = useState(-1);
+
+  const process = (prom: Promise<{ status: string; count?: number }>) => {
+    prom.then((data) => {
+      data.status === "awake" && data.count && setSiteViewCount(data.count);
+      data.status === "newVisitor" && console.log("Hey there!");
+      data.status === "oldVisitor" && console.log("Welcome back!");
+    });
+  };
+
+  useEffect(() => {
+    const wakeupReq = fetch(__prod ? __prodServer : __devServer);
+    const visitReq = fetch(
+      __prod ? `${__prodServer}/hello` : `${__devServer}/hello`
+    );
+    Promise.all([wakeupReq, visitReq]).then((reqs) => {
+      reqs.forEach((req) => {
+        process(req.json());
+      });
+    });
+  }, []);
 
   // a ref can be used to get updated vals in a settimeout
   // updating ref when the state changes
@@ -685,29 +709,71 @@ const App: React.FC<props> = () => {
             stepForwardRef={stepForwardRef}
           />
         </div>
-
         <div
           style={{
-            margin: "1.5rem",
-            textAlign: "center",
-            color: "gray",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            marginTop: "1rem",
           }}
         >
-          <div
+          <BlackButton
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              width: "90%",
+              margin: "1rem",
+            }}
+            onClick={(e) => {
+              if (detailsRef.current) {
+                if (detailsRef.current.style.maxHeight === "20rem") {
+                  e.currentTarget.textContent = "About the Project";
+                  detailsRef.current.style.maxHeight = "0px";
+                  detailsRef.current.style.margin = "0";
+                } else {
+                  e.currentTarget.textContent = "Okay, got it";
+                  detailsRef.current.style.maxHeight = "20rem";
+                  detailsRef.current.style.margin = "1.5rem";
+                  detailsRef.current.style.marginTop = "0.5rem";
+                }
+              }
             }}
           >
-            <img
-              style={{ width: 20, height: 20, marginRight: "0.3rem" }}
-              src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Association_for_Computing_Machinery_%28ACM%29_logo.svg/1200px-Association_for_Computing_Machinery_%28ACM%29_logo.svg.png"
-              alt="vvce-acm-logo"
-            />
-            <p>Powered by VVCE-ACM Student Chapter</p>
+            About the Project
+          </BlackButton>
+          <div
+            ref={detailsRef}
+            style={{
+              transition: "all 0.2s ease-in-out",
+              overflowY: "hidden",
+              margin: "1.5rem",
+              maxHeight: "0rem",
+            }}
+          >
+            <p>
+              {`
+                Built with React & styled-components.
+                Powered by VVCE ACM Student Chapter. 
+              `}
+            </p>
+            <h3 style={{ margin: "0.4rem 0" }}>How to use:</h3>
+            <ul style={{ marginLeft: "1rem" }}>
+              <li>Select an algorithm </li>
+              <li>Play the visualizer</li>
+              <li>To go back a step, pause and step back</li>
+              <li>
+                After the array is sorted, press the <strong>Reset</strong>{" "}
+                button to bring the array back to its original unsorted order.
+              </li>
+              <li>
+                Pro tip: Use the <strong>Reset</strong> to compare between
+                different algorithms for the same array.
+              </li>
+            </ul>
+            {siteViewCount !== 1 && (
+              <p>
+                Views: <strong>{siteViewCount}</strong>
+              </p>
+            )}
           </div>
-          <p>Built with React and styled-components</p>
         </div>
       </div>
       <SortContainer
