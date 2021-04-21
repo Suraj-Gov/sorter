@@ -1,5 +1,6 @@
 import { Handler, Context, Callback, APIGatewayEvent } from "aws-lambda";
-import prismaClient from "../lib/db";
+import { PrismaClient } from "@prisma/client";
+const prismaClient = new PrismaClient();
 
 interface Response {
   statusCode: number;
