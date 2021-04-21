@@ -25,13 +25,13 @@
     "start": "run-p start:**",
     "start:app": "react-scripts start",
     "start:lambda": "netlify-lambda serve src/lambda",
-    "build": "run-p build:**",
+    "build": "run-p build:** && prisma generate",
     "build:app": "react-scripts build",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build:lambda": "npx prisma generate && netlify-lambda build src/lambda"
+    "build:lambda": "netlify-lambda build src/lambda"
   },
   "eslintConfig": {
     "extends": [
