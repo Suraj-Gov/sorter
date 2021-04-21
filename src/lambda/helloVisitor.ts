@@ -1,5 +1,5 @@
 import { Handler, Context, Callback, APIGatewayEvent } from "aws-lambda";
-import db from "../lib/db";
+import prismaClient from "../lib/db";
 
 interface Response {
   statusCode: number;
@@ -13,10 +13,9 @@ const handler: Handler = (
 ) => {
   const fetchData = async () => {
     try {
-      const data = await db.query("SELECT * FROM visitors", []);
-      console.log(data.rows);
+      const allVisitors = await prismaClient.visitors.findMany();
       const response: Response = {
-        body: JSON.stringify(data.rows[0]),
+        body: JSON.stringify(allVisitors),
         statusCode: 200,
       };
       callback(undefined, response);

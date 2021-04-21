@@ -1,26 +1,15 @@
-import { Pool } from "pg";
+import { PrismaClient } from "@prisma/client";
 
-const pool = new Pool({
-  user: "eqgxqykspnclej",
-  password: process.env.DB_PASS,
-  host: "ec2-107-20-153-39.compute-1.amazonaws.com",
-  database: "d4f56rpnfrfi57",
-  port: 5432,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-  // idleTimeoutMillis: 2000,
-  // connectionTimeoutMillis: 1000,
-  max: 2,
-  keepAlive: false,
-});
+// add prisma to the NodeJS global type
+interface CustomNodeJsGlobal extends NodeJS.Global {
+  prisma: PrismaClient;
+}
 
-pool.on("connect", () => {
-  console.log("connected ✅");
-});
+// prevent multiple instances of Prisma Client in development
+declare const global: CustomNodeJsGlobal;
+const prisma = global.prisma || new PrismaClient();
+if (process.env.NODE_ENV === "development") {
+  global.prisma = prisma;
+}
 
-pool.on("remove", () => {
-  console.log("disconnected ❌");
-});
-
-export default pool;
+export default prisma;
