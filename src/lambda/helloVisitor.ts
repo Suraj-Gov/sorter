@@ -1,5 +1,5 @@
 import { Handler, Context, Callback, APIGatewayEvent } from "aws-lambda";
-const PrismaClient = require("@prisma/client");
+const { PrismaClient } = require("@prisma/client");
 const prismaClient = new PrismaClient();
 
 interface Response {
