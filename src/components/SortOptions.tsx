@@ -39,6 +39,7 @@ export const BlackButton = styled.button`
   border-radius: 5px;
   padding: 0.5rem;
   margin-right: 0.5rem;
+  cursor: pointer;
 
   &:disabled {
     opacity: 0.5;
