@@ -120,7 +120,10 @@ const SortContainer: React.FC<props> = ({
   }, [initialInputArr]);
 
   return (
-    <Container id="sortContainer" style={{ backgroundColor: "#AAD6FF" }}>
+    <Container
+      id="sortContainer"
+      style={{ backgroundColor: "#AAD6FF", position: "relative" }}
+    >
       {initialInputArr.map((i, idx) => {
         return (
           <Bar
