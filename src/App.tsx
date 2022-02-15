@@ -748,12 +748,6 @@ const App: React.FC<props> = () => {
               maxHeight: "0rem",
             }}
           >
-            <p>
-              {`
-                Built with React & styled-components.
-                Powered by VVCE ACM Student Chapter. 
-              `}
-            </p>
             <h3 style={{ margin: "0.4rem 0" }}>How to use:</h3>
             <ul style={{ marginLeft: "1rem" }}>
               <li>Select an algorithm </li>

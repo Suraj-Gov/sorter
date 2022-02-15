@@ -124,19 +124,6 @@ const SortContainer: React.FC<props> = ({
       id="sortContainer"
       style={{ backgroundColor: "#AAD6FF", position: "relative" }}
     >
-      <img
-        style={{
-          width: 32,
-          height: 32,
-          marginLeft: "0.3rem",
-          position: "absolute",
-          top: "1rem",
-          right: "1rem",
-          zIndex: 5,
-        }}
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Association_for_Computing_Machinery_%28ACM%29_logo.svg/1200px-Association_for_Computing_Machinery_%28ACM%29_logo.svg.png"
-        alt="vvce-acm-logo"
-      />
       {initialInputArr.map((i, idx) => {
         return (
           <Bar
