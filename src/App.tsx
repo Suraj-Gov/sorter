@@ -11,7 +11,6 @@ import SpeedContext from "./contexts/SpeedContext";
 import styled from "styled-components";
 import Controls from "./components/Controls";
 import SortOptions from "./components/SortOptions";
-import { __devServer, __prod, __prodServer } from "./constants";
 import { BlackButton } from "./components/SortOptions";
 
 const Main = styled.div`
@@ -58,27 +57,6 @@ const App: React.FC<props> = () => {
   const stepForwardRef = useRef<HTMLButtonElement>(null);
   const [barCount, setBarCount] = useState(30);
   const detailsRef = useRef<HTMLDivElement>(null);
-  const [siteViewCount, setSiteViewCount] = useState(-1);
-
-  const process = (prom: Promise<{ status: string; count?: number }>) => {
-    prom.then((data) => {
-      data.status === "awake" && data.count && setSiteViewCount(data.count);
-      data.status === "newVisitor" && console.log("Hey there!");
-      data.status === "oldVisitor" && console.log("Welcome back!");
-    });
-  };
-
-  useEffect(() => {
-    const wakeupReq = fetch(__prod ? __prodServer : __devServer);
-    const visitReq = fetch(
-      __prod ? `${__prodServer}/hello` : `${__devServer}/hello`
-    );
-    Promise.all([wakeupReq, visitReq]).then((reqs) => {
-      reqs.forEach((req) => {
-        process(req.json());
-      });
-    });
-  }, []);
 
   // a ref can be used to get updated vals in a settimeout
   // updating ref when the state changes
@@ -762,11 +740,6 @@ const App: React.FC<props> = () => {
                 different algorithms for the same array.
               </li>
             </ul>
-            {siteViewCount !== -1 && (
-              <p>
-                Views: <strong>{siteViewCount}</strong>
-              </p>
-            )}
           </div>
         </div>
       </div>
